@@ -2,40 +2,41 @@ import asyncio
 import aiohttp
 import time
 from datetime import datetime
-from collections import deque
 
 BASE_URL = (
     "https://sword.pinnacleoddsdropper.com/alerts/user_2ib1Weq6qiKPFR19iNoTqmSoFoD"
 )
 
 # ── FILTER THRESHOLDS ────────────────────────────────────────────────
+# Filtering is disabled for now — passes_filter() always returns True.
+# Thresholds kept here so they're easy to re-enable later.
 MIN_DROP_PERCENT = 13
 MIN_LIQUIDITY = 200
 MIN_MINUTES_BUFFER = 30
 POLL_INTERVAL_SEC = 8
-SEEN_KEYS_MAX = 5000
 MAX_BACKOFF_SEC = 30
+
+# Sport ID reference — sportId "1" = Soccer is confirmed directly from your
+# own captured sword data (every soccer event carries it). "3" = Basketball
+# is a hypothesis based on a DIFFERENT documented API (pinnodds.com) with
+# similar naming conventions — NOT yet confirmed against sword itself.
+SPORT_ID_SOCCER = "1"
+SPORT_ID_BASKETBALL_UNCONFIRMED = (
+    "3"  # unverified for sword — confirm before relying on it
+)
 
 
 def passes_filter(event):
-    try:
-        drop_percent = float(event.get("percentageChange", 0))
-        liquidity = float(event.get("lowerBoundLimit", 0))
-        starts_ms = int(event.get("starts", 0))
-        timestamp_ms = int(event.get("timestamp", 0))
-    except (ValueError, TypeError):
-        return False
-
-    if drop_percent < MIN_DROP_PERCENT:
-        return False
-    if liquidity < MIN_LIQUIDITY:
-        return False
-    if (starts_ms - timestamp_ms) / 1000 / 60 < MIN_MINUTES_BUFFER:
-        return False
+    # No filtering — every event passes through.
     return True
 
 
 def dedupe_key(event):
+    """
+    Not used during streaming anymore — dedup now happens at bet
+    placement time instead. Kept here so the same key logic can be
+    reused downstream without redefining it.
+    """
     return (
         event.get("eventId"),
         event.get("lineType"),
@@ -50,7 +51,7 @@ def print_opportunity(e):
     kickoff_str = datetime.fromtimestamp(starts_ms / 1000).strftime("%Y-%m-%d %H:%M")
     now_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
-    print(f"\n🔔 [{now_str}] NEW QUALIFYING DROP")
+    print(f"\n🔔 [{now_str}] NEW EVENT")
     print(f"  {e['home']} vs {e['away']}  [{e['leagueName']}]")
     print(
         f"  Market      : {e['lineType']} | points={e.get('points')} | outcome={e['outcome']}"
@@ -66,18 +67,9 @@ def print_opportunity(e):
 class OddsStreamer:
     def __init__(self, out_queue: asyncio.Queue):
         self.cursor = None
-        self.seen_keys = deque(maxlen=SEEN_KEYS_MAX)
-        self.seen_set = set()
         self.total_seen = 0
         self.total_passed = 0
         self.out_queue = out_queue
-
-    def _remember(self, key):
-        if len(self.seen_keys) == self.seen_keys.maxlen:
-            oldest = self.seen_keys[0]
-            self.seen_set.discard(oldest)
-        self.seen_keys.append(key)
-        self.seen_set.add(key)
 
     async def poll_once(self, session: aiohttp.ClientSession):
         params = {"dropNotificationsCursor": self.cursor} if self.cursor else {}
@@ -96,10 +88,6 @@ class OddsStreamer:
         for e in events:
             if not passes_filter(e):
                 continue
-            key = dedupe_key(e)
-            if key in self.seen_set:
-                continue
-            self._remember(key)
             self.total_passed += 1
             print_opportunity(e)
             await self.out_queue.put(e)
@@ -112,7 +100,9 @@ class OddsStreamer:
     async def run(self):
         connector = aiohttp.TCPConnector(limit=10, ttl_dns_cache=300, family=0)
         async with aiohttp.ClientSession(connector=connector) as session:
-            print("🟢 Async streaming started.\n")
+            print(
+                "🟢 Async streaming started (no filtering, no dedupe — all events pass).\n"
+            )
             consecutive_failures = 0
 
             while True:
@@ -130,7 +120,7 @@ class OddsStreamer:
                     print(
                         f"\n⚠️ Fetch failed [{type(ex).__name__}]: {ex or 'no message'} "
                         f"— failure #{consecutive_failures}, backing off {backoff}s "
-                        f"(seen={self.total_seen}, qualifying={self.total_passed} — unchanged during outage)"
+                        f"(seen={self.total_seen}, passed={self.total_passed} — unchanged during outage)"
                     )
                     await asyncio.sleep(backoff)
                     continue
@@ -139,7 +129,7 @@ class OddsStreamer:
                 status_line = (
                     f"[{datetime.now().strftime('%H:%M:%S')}] "
                     f"poll={elapsed * 1000:.0f}ms | seen={self.total_seen} | "
-                    f"qualifying={self.total_passed}"
+                    f"passed={self.total_passed}"
                 )
                 print(f"\r{status_line}".ljust(90), end="", flush=True)
 
