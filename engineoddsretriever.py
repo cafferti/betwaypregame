@@ -1,6 +1,5 @@
 import time
 import threading
-import concurrent.futures
 import requests
 from datetime import datetime, timezone
 
@@ -14,28 +13,57 @@ HEADERS = {
     "Origin": "https://www.betway.com.ng",
 }
 
-PAGE_SIZE = 200
+PAGE_SIZE = 20
 EXCLUDE_REGIONS = {"esoccer"}
 MAX_RETRIES = 3
 RETRY_BACKOFF_SECONDS = 1
-MAX_PAGES_GUESS = 4
-FETCH_WORKERS = MAX_PAGES_GUESS
-REFRESH_INTERVAL_SECONDS = 5
+MAX_PAGES = 15
+REFRESH_INTERVAL_SECONDS = 15
+MAX_BACKOFF_SECONDS = 120
 
-_session = requests.Session()
-_adapter = requests.adapters.HTTPAdapter(
-    pool_connections=FETCH_WORKERS, pool_maxsize=FETCH_WORKERS
-)
-_session.mount("https://", _adapter)
+_session_lock = threading.Lock()
+_session = None
+
+
+def _new_session():
+    s = requests.Session()
+    adapter = requests.adapters.HTTPAdapter(pool_connections=2, pool_maxsize=2)
+    s.mount("https://", adapter)
+    return s
+
+
+def _get_session():
+    global _session
+    with _session_lock:
+        if _session is None:
+            _session = _new_session()
+        return _session
+
+
+def _reset_session():
+    global _session
+    with _session_lock:
+        if _session is not None:
+            try:
+                _session.close()
+            except Exception:
+                pass
+        _session = _new_session()
 
 
 def _get_with_retry(url, params):
     last_exc = None
     for attempt in range(MAX_RETRIES):
+        session = _get_session()
         try:
-            resp = _session.get(url, params=params, headers=HEADERS, timeout=15)
+            resp = session.get(url, params=params, headers=HEADERS, timeout=15)
             resp.raise_for_status()
             return resp.json()
+        except requests.exceptions.SSLError as e:
+            last_exc = e
+            _reset_session()
+            time.sleep(RETRY_BACKOFF_SECONDS * (2**attempt))
+            continue
         except requests.exceptions.HTTPError as e:
             status = e.response.status_code if e.response is not None else None
             last_exc = e
@@ -46,7 +74,7 @@ def _get_with_retry(url, params):
         except requests.exceptions.RequestException as e:
             last_exc = e
             time.sleep(RETRY_BACKOFF_SECONDS * (2**attempt))
-    print(f"   ❌ Giving up: {last_exc}")
+    print(f"[betway] ERROR: giving up on page fetch — {last_exc}")
     return None
 
 
@@ -70,30 +98,24 @@ def fetch_page(skip):
     return _get_with_retry(BASE_URL, url_params)
 
 
-def fetch_all_upcoming(max_pages=MAX_PAGES_GUESS, workers=FETCH_WORKERS):
-    skips = [i * PAGE_SIZE for i in range(max_pages)]
-    results_by_skip = {}
-    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
-        future_to_skip = {executor.submit(fetch_page, skip): skip for skip in skips}
-        for future in concurrent.futures.as_completed(future_to_skip):
-            skip = future_to_skip[future]
-            try:
-                results_by_skip[skip] = future.result()
-            except Exception as e:
-                print(f"   ⚠️  page skip={skip} failed: {e}")
-                results_by_skip[skip] = None
-
+def fetch_all_upcoming(max_pages=MAX_PAGES):
     all_events, all_markets, all_outcomes, all_prices = [], [], [], []
-    for skip in skips:
-        data = results_by_skip.get(skip)
+
+    skip = 0
+    for _ in range(max_pages):
+        data = fetch_page(skip)
         if data is None:
-            continue
+            break
+
         all_events.extend(data.get("events", []))
         all_markets.extend(data.get("markets", []))
         all_outcomes.extend(data.get("outcomes", []))
         all_prices.extend(data.get("prices", []))
+
         if data.get("isFinalPage", True):
             break
+        skip += PAGE_SIZE
+        time.sleep(0.3)
 
     return {
         "events": all_events,
@@ -196,41 +218,7 @@ def build_odds_table(data):
     return results
 
 
-def print_odds_table(rows):
-    print(f"📡 {len(rows)} events with odds\n")
-    print("=" * 70)
-    for r in rows:
-        kickoff = datetime.fromtimestamp(r["kickoff_epoch"], tz=timezone.utc).strftime(
-            "%Y-%m-%d %H:%M UTC"
-        )
-        print(f"⚽ {r['home']} vs {r['away']}  [{r['league']} - {r['region']}]")
-        print(f"   Kickoff: {kickoff}  | eventId: {r['eventId']}")
-
-        by_name = {}
-        for m in r["markets"]:
-            by_name.setdefault(m["displayName"], []).append(m)
-
-        for market_name, instances in by_name.items():
-            print(f"\n   📊 {market_name}")
-            for inst in instances:
-                print(f"      -- Market ID {inst['marketId']} --")
-                for o in inst["outcomes"]:
-                    label = (
-                        f"{o['name']} {o['line']}"
-                        if o["line"] not in ("", None)
-                        else o["name"]
-                    )
-                    print(f"         {label:30}: {o['price']}")
-        print("\n" + "-" * 70)
-
-
 class OddsCache:
-    """
-    Runs fetch_all_upcoming() + build_odds_table() on a loop in the
-    background. Consuming code calls get_rows(), which returns instantly
-    from memory — no network wait on the calling side.
-    """
-
     def __init__(self, refresh_interval_seconds=REFRESH_INTERVAL_SECONDS):
         self.refresh_interval_seconds = refresh_interval_seconds
         self._rows = []
@@ -240,6 +228,7 @@ class OddsCache:
         self._thread = None
         self.fail_count = 0
         self.success_count = 0
+        self._consecutive_failures = 0
 
     def start(self):
         self._thread = threading.Thread(target=self._run_loop, daemon=True)
@@ -259,10 +248,24 @@ class OddsCache:
                     self._rows = rows
                     self._last_updated = time.time()
                     self.success_count += 1
+                self._consecutive_failures = 0
+                wait_time = self.refresh_interval_seconds
+                print(
+                    f"[betway] cache refreshed ok — {len(rows)} event/market rows "
+                    f"(success #{self.success_count})"
+                )
             except Exception as e:
                 self.fail_count += 1
-                print(f"   ⚠️  Background refresh failed: {e}")
-            self._stop_event.wait(self.refresh_interval_seconds)
+                self._consecutive_failures += 1
+                wait_time = min(
+                    MAX_BACKOFF_SECONDS,
+                    self.refresh_interval_seconds * (2**self._consecutive_failures),
+                )
+                print(
+                    f"[betway] ERROR: background refresh failed (#{self._consecutive_failures}) "
+                    f"— {e} — backing off {wait_time:.0f}s"
+                )
+            self._stop_event.wait(wait_time)
 
     def get_rows(self):
         with self._lock:
@@ -282,24 +285,13 @@ def main():
     cache = OddsCache()
     cache.start()
 
-    print("Waiting for first fetch to complete...")
     while not cache.is_ready():
         time.sleep(0.1)
 
-    print_odds_table(cache.get_rows())
-    print("\n✅ Cache is live. Running indefinitely — press Ctrl+C to stop.\n")
-
     try:
         while True:
-            rows = cache.get_rows()
-            print(
-                f"[{datetime.now().strftime('%H:%M:%S')}] "
-                f"{len(rows)} events cached | age: {cache.age_seconds():.1f}s | "
-                f"successes: {cache.success_count} | failures: {cache.fail_count}"
-            )
             time.sleep(2)
     except KeyboardInterrupt:
-        print("\n🛑 Stopping...")
         cache.stop()
 
 
