@@ -1,29 +1,60 @@
 from difflib import SequenceMatcher
 
-RULES = {
-    ("football", "moneyline"): {"min_ev": 6.0, "max_nvp": 2.7},
-    ("football", "totals_over"): {"min_ev": 4.0, "max_nvp": 2.5},
-    ("football", "spread_positive"): {"min_ev": 5.0, "max_nvp": 2.5},
-}
-
 SPORT_ID_SOCCER = "1"
+SPORT_ID_BASKETBALL = "3"
+SPORT_NAMES = {SPORT_ID_SOCCER: "football", SPORT_ID_BASKETBALL: "basketball"}
 
-SPORT_ID_NAMES = {
-    SPORT_ID_SOCCER: "soccer",
+MONEYLINE_KEYWORDS = {
+    "football": "1x2",
+    "basketball": "winner",
 }
 
-# Single consistent threshold used everywhere we fuzzy-match team/event names.
-# Lowered from the old scattered 0.6 / 0.8 values so fewer real matches get
-# missed due to punctuation, abbreviations, or naming differences between
-# Pinnacle and Betway (e.g. "St." vs "Saint", "II" vs "B", etc.)
+MIN_DROP_PERCENT = 12.0
+MIN_MINUTES_TO_KICKOFF = 30
+MAX_MINUTES_TO_KICKOFF = 24 * 60
+MIN_EV_PERCENT = 3.0
+MAX_NVP = 3.0
+
+# Single consistent threshold for all fuzzy team/event name matching —
+# was previously scattered as 0.6 (event matching) vs 0.8 (outcome/team
+# matching within a market), which missed real matches inconsistently.
 TEAM_MATCH_THRESHOLD = 0.70
 
-# Safety cap so we don't match wildly unrelated lines (e.g. Pinnacle's 3.75
-# accidentally matching a stray 50.5 line from a different market bleeding
-# in). Generous enough to always find a real nearby line in practice.
+# Safety cap for nearest-line search so an absurdly distant line doesn't
+# get treated as "nearest available" just because nothing closer exists.
 MAX_LINE_DISTANCE = 5.0
 
-_already_evaluated = set()
+
+class Stats:
+    """Running counters across the whole session, printed after every
+    single event evaluated — not per-run-of-the-script, cumulative for
+    as long as the process stays up."""
+
+    def __init__(self):
+        self.total_fetched = 0
+        self.total_passed = 0
+        self.total_failed = 0
+        self.not_found_on_betway = 0
+
+    def record_fetch(self):
+        self.total_fetched += 1
+
+    def record_pass(self):
+        self.total_passed += 1
+
+    def record_fail(self, reason: str):
+        self.total_failed += 1
+        if reason == "no matching Betway event found":
+            self.not_found_on_betway += 1
+
+    def print_summary(self):
+        print(
+            f"📊 fetched: {self.total_fetched} | passed: {self.total_passed} | "
+            f"failed: {self.total_failed} | not found on Betway: {self.not_found_on_betway}"
+        )
+
+
+stats = Stats()
 
 
 def power_method_devig(prices: list, tol=1e-10, max_iter=200):
@@ -57,6 +88,8 @@ def get_market_prices_and_outcomes(event: dict):
     line_type = event.get("lineType")
 
     if line_type == "money_line":
+        # FIX: compare as string on both sides — Pinnacle may send this as
+        # an int or a str depending on endpoint/sport; str() covers both.
         if str(event.get("moneylineNumberOfWays")) == "3":
             return (
                 [
@@ -100,40 +133,25 @@ def is_alt_stat_market(event: dict) -> bool:
     home = event.get("home", "")
     away = event.get("away", "")
     league = event.get("leagueName", "")
-    return "(Corners)" in home or "(Corners)" in away or "Corners" in league
+    alt_markers = ("(Corners)", "(Bookings)")
+    if any(marker in home or marker in away for marker in alt_markers):
+        return True
+    if "Corners" in league or "Bookings" in league:
+        return True
+    return False
 
 
-def classify_pinnacle_event(event: dict):
-    sport_id = event.get("sportId")
+def identify_sport(event: dict):
+    return SPORT_NAMES.get(event.get("sportId"))
 
-    if sport_id != SPORT_ID_SOCCER:
-        sport_name = SPORT_ID_NAMES.get(sport_id, f"sportId={sport_id}")
-        return None, f"other sport ({sport_name}) — not handled yet"
 
-    line_type = event.get("lineType")
-
-    if line_type == "money_line":
-        return ("football", "moneyline"), None
-
-    if line_type == "spread":
-        try:
-            points = float(event.get("points") or 0)
-        except (ValueError, TypeError):
-            return None, "invalid points value"
-        if points > 0:
-            return ("football", "spread_positive"), None
-        return (
-            None,
-            "negative-point spread — excluded by design (only underdog/+points evaluated)",
-        )
-
-    if line_type == "total":
-        outcome = (event.get("outcome") or "").lower()
-        if outcome != "over":
-            return None, "'under' outcome — excluded by design (only 'over' evaluated)"
-        return ("football", "totals_over"), None
-
-    return None, f"unhandled lineType '{line_type}'"
+def minutes_to_kickoff(event: dict):
+    try:
+        starts_ms = int(event.get("starts", 0))
+        timestamp_ms = int(event.get("timestamp", 0))
+    except (ValueError, TypeError):
+        return None
+    return (starts_ms - timestamp_ms) / 1000 / 60
 
 
 def _normalize(name: str) -> str:
@@ -185,14 +203,12 @@ def _find_nearest_line_outcome(
     market_outcomes, target_name_filter, points, max_distance=MAX_LINE_DISTANCE
 ):
     """
-    Pure nearest-neighbor line search: looks at EVERY available line on
-    Betway for outcomes matching target_name_filter (e.g. "over"), and
-    returns whichever one is numerically closest to `points` — regardless
-    of decimal granularity (works for 0.25 lines, 0.1 lines, whole numbers,
-    anything). No fixed step size, so nothing gets skipped over.
-
-    Returns (price, actual_line, is_exact) or (None, None, None) if no
-    candidate exists within max_distance.
+    Pure nearest-neighbor line search: scans EVERY available line for
+    outcomes matching target_name_filter (e.g. "over", or None for
+    spread sides) and returns whichever is numerically closest to
+    `points` — works regardless of decimal granularity (0.25, 0.1,
+    whole numbers, etc). Returns (price, actual_line, is_exact) or
+    (None, None, None) if nothing is within max_distance.
     """
     best_price = None
     best_line = None
@@ -214,7 +230,6 @@ def _find_nearest_line_outcome(
 
     if best_price is None:
         return None, None, None
-
     if best_diff > max_distance:
         return None, None, None
 
@@ -222,8 +237,8 @@ def _find_nearest_line_outcome(
     return best_price, best_line, is_exact
 
 
-def find_betway_price(betway_row: dict, pinnacle_event: dict, classification: tuple):
-    _, market_kind = classification
+def find_betway_price(betway_row: dict, pinnacle_event: dict, sport: str):
+    line_type = pinnacle_event.get("lineType")
     outcome_side = (pinnacle_event.get("outcome") or "").lower()
 
     try:
@@ -238,12 +253,15 @@ def find_betway_price(betway_row: dict, pinnacle_event: dict, classification: tu
     for market in betway_row.get("markets", []):
         display_name = (market.get("displayName") or "").lower()
 
-        if market_kind == "moneyline" and "1x2" in display_name.replace(" ", ""):
+        if line_type == "money_line":
+            keyword = MONEYLINE_KEYWORDS.get(sport)
+            if not keyword or keyword not in display_name.replace(" ", ""):
+                continue
             for o in market["outcomes"]:
                 if _team_similarity(o["name"], team_name) >= TEAM_MATCH_THRESHOLD:
                     return o["price"], None, True  # no line concept for moneyline
 
-        elif market_kind == "spread_positive" and "handicap" in display_name:
+        elif line_type == "spread" and "handicap" in display_name:
             matching_outcomes = [
                 o
                 for o in market["outcomes"]
@@ -255,17 +273,9 @@ def find_betway_price(betway_row: dict, pinnacle_event: dict, classification: tu
             if price is not None:
                 return price, actual_line, is_exact
 
-        elif market_kind == "totals_over" and "total" in display_name:
+        elif line_type == "total" and "total" in display_name:
             price, actual_line, is_exact = _find_nearest_line_outcome(
-                market["outcomes"], target_name_filter="over", points=points
-            )
-            if price is not None:
-                return price, actual_line, is_exact
-
-        elif market_kind == "totals_under" and "total" in display_name:
-            # Only reached if "under" is later enabled in classify_pinnacle_event
-            price, actual_line, is_exact = _find_nearest_line_outcome(
-                market["outcomes"], target_name_filter="under", points=points
+                market["outcomes"], target_name_filter=outcome_side, points=points
             )
             if price is not None:
                 return price, actual_line, is_exact
@@ -276,89 +286,105 @@ def find_betway_price(betway_row: dict, pinnacle_event: dict, classification: tu
 def _describe_event(event: dict) -> str:
     return (
         f"{event.get('home')} vs {event.get('away')} [{event.get('leagueName')}] "
-        f"{event.get('lineType')} pts={event.get('points')} outcome={event.get('outcome')} "
-        f"price={event.get('changeTo')}"
-    )
-
-
-def _dedupe_key(event: dict):
-    change_to = event.get("changeTo")
-    try:
-        change_to = round(float(change_to), 2)
-    except (TypeError, ValueError):
-        pass
-
-    return (
-        event.get("eventId"),
-        event.get("lineType"),
-        event.get("points"),
-        event.get("outcome"),
-        event.get("periodNumber"),
-        change_to,
+        f"{event.get('lineType')} pts={event.get('points')} outcome={event.get('outcome')}"
     )
 
 
 def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
-    key = _dedupe_key(pinnacle_event)
-    if key in _already_evaluated:
-        return None
-    _already_evaluated.add(key)
-
+    """
+    Generic filter: drop% -> time-to-kickoff -> NVP -> Betway match -> EV.
+    Always prints exactly one PASS or FAIL line, followed by a running
+    stats summary for the whole session.
+    """
+    stats.record_fetch()
     desc = _describe_event(pinnacle_event)
-    print(f"[filter] evaluating: {desc}")
 
-    classification, skip_reason = classify_pinnacle_event(pinnacle_event)
-    if classification is None:
-        print(f"⏭️  SKIP [{skip_reason}] {desc}")
+    sport = identify_sport(pinnacle_event)
+    if sport is None:
+        print(f"❌ FAIL [unsupported sport] {desc}")
+        stats.record_fail("unsupported sport")
+        stats.print_summary()
         return None
 
-    rule = RULES[classification]
-    outcome_label = (pinnacle_event.get("outcome") or "").lower()
+    try:
+        drop_pct = float(pinnacle_event.get("percentageChange", 0))
+    except (ValueError, TypeError):
+        drop_pct = 0.0
+    if drop_pct < MIN_DROP_PERCENT:
+        print(f"❌ FAIL [drop {drop_pct:.1f}% < min {MIN_DROP_PERCENT}%] {desc}")
+        stats.record_fail("drop too low")
+        stats.print_summary()
+        return None
 
+    mins_to_kickoff = minutes_to_kickoff(pinnacle_event)
+    if mins_to_kickoff is None:
+        print(f"❌ FAIL [could not compute time-to-kickoff] {desc}")
+        stats.record_fail("no kickoff time")
+        stats.print_summary()
+        return None
+    if mins_to_kickoff < MIN_MINUTES_TO_KICKOFF:
+        print(
+            f"❌ FAIL [only {mins_to_kickoff:.0f}min to kickoff, min {MIN_MINUTES_TO_KICKOFF}] {desc}"
+        )
+        stats.record_fail("too close to kickoff")
+        stats.print_summary()
+        return None
+    if mins_to_kickoff > MAX_MINUTES_TO_KICKOFF:
+        print(
+            f"❌ FAIL [{mins_to_kickoff:.0f}min to kickoff, max {MAX_MINUTES_TO_KICKOFF}] {desc}"
+        )
+        stats.record_fail("too far from kickoff")
+        stats.print_summary()
+        return None
+
+    outcome_label = (pinnacle_event.get("outcome") or "").lower()
     nvp, fair_prob = compute_nvp_and_fair_prob(pinnacle_event, outcome_label)
     if nvp is None:
         print(f"❌ FAIL [could not compute NVP] {desc}")
-        return None
-    print(f"[filter] NVP computed: {nvp:.3f} (need ≤ {rule['max_nvp']}) — {desc}")
-
-    if nvp > rule["max_nvp"]:
-        print(f"❌ FAIL [NVP {nvp:.3f} > max {rule['max_nvp']}] {desc}")
+        stats.record_fail("no NVP")
+        stats.print_summary()
         return None
 
-    print(
-        f"[filter] searching Betway ({len(betway_rows)} rows cached) for match — {desc}"
-    )
+    if nvp > MAX_NVP:
+        print(f"❌ FAIL [NVP {nvp:.3f} > max {MAX_NVP}] {desc}")
+        stats.record_fail("NVP too high")
+        stats.print_summary()
+        return None
+
     betway_row = find_matching_betway_event(pinnacle_event, betway_rows)
     if betway_row is None:
         print(
             f"❌ FAIL [no matching Betway event found (threshold {TEAM_MATCH_THRESHOLD})] {desc}"
         )
+        stats.record_fail("no matching Betway event found")
+        stats.print_summary()
         return None
-    print(
-        f"[filter] ✅ matched Betway event: {betway_row.get('home')} vs {betway_row.get('away')} "
-        f"(eventId={betway_row.get('eventId')})"
-    )
 
     betway_price, matched_line, is_exact = find_betway_price(
-        betway_row, pinnacle_event, classification
+        betway_row, pinnacle_event, sport
     )
     if betway_price is None:
         print(f"❌ FAIL [matched event but not this market/outcome on Betway] {desc}")
+        stats.record_fail("market/outcome not found on Betway")
+        stats.print_summary()
         return None
 
     line_note = (
         ""
         if is_exact
-        else f" ⚠️ APPROX LINE (Pinnacle pts={pinnacle_event.get('points')} → Betway nearest line={matched_line})"
+        else f" ⚠️ APPROX LINE (Pinnacle pts={pinnacle_event.get('points')} → Betway nearest={matched_line})"
     )
-    print(f"[filter] found Betway price: {betway_price}{line_note} — computing EV...")
+    if line_note:
+        print(f"[filter] {line_note.strip()}")
 
     ev_percent = (betway_price * fair_prob - 1.0) * 100.0
-    if ev_percent < rule["min_ev"]:
+    if ev_percent < MIN_EV_PERCENT:
         print(
-            f"❌ FAIL [EV {ev_percent:.2f}% < min {rule['min_ev']}%] {desc} "
+            f"❌ FAIL [EV {ev_percent:.2f}% < min {MIN_EV_PERCENT}%] {desc} "
             f"| Betway {betway_price} vs NVP {nvp:.3f}"
         )
+        stats.record_fail("EV too low")
+        stats.print_summary()
         return None
 
     result = {
@@ -367,9 +393,12 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
         "home": pinnacle_event.get("home"),
         "away": pinnacle_event.get("away"),
         "league": pinnacle_event.get("leagueName"),
-        "market_kind": classification[1],
+        "sport": sport,
+        "line_type": pinnacle_event.get("lineType"),
         "outcome": outcome_label,
         "points": pinnacle_event.get("points"),
+        "drop_percent": round(drop_pct, 2),
+        "minutes_to_kickoff": round(mins_to_kickoff, 1),
         "nvp": round(nvp, 3),
         "betway_price": betway_price,
         "betway_matched_line": matched_line,
@@ -380,10 +409,13 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
 
     exact_tag = "" if is_exact else " ⚠️ APPROX LINE"
     print(
-        f"✅ PASS{exact_tag} [{result['market_kind']}] {result['home']} vs {result['away']} "
-        f"[{result['league']}] {result['outcome']} {result['points']}→{matched_line} "
+        f"✅ PASS{exact_tag} [{result['sport']}/{result['line_type']}] {result['home']} vs {result['away']} "
+        f"[{result['league']}] {result['outcome']} {result['points']} "
+        f"| drop {result['drop_percent']}% | {result['minutes_to_kickoff']:.0f}min to kickoff "
         f"| Betway {result['betway_price']} vs NVP {result['nvp']} "
         f"| EV {result['ev_percent']}%"
     )
+    stats.record_pass()
+    stats.print_summary()
 
     return result

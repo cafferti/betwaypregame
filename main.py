@@ -1,22 +1,18 @@
-"""
-orchestrator.py — connects the three pieces:
-  1. Betway OddsCache (background thread, refreshes every 15s)
-  2. Pinnacle OddsStreamer (asyncio, polls every 8s, pushes to a queue)
-  3. evaluate_pinnacle_event (pulls from the queue, checks against
-     Betway's current cache, prints only if it qualifies)
-"""
-
 import asyncio
 
-from engineoddsretriever import OddsCache
+from engineoddsretriever import OddsCache, BasketballOddsCache
 from pinnacleretriever import OddsStreamer
 from filter import evaluate_pinnacle_event
 
 
-async def consume_and_evaluate(streamer: OddsStreamer, betway_cache: OddsCache):
+async def consume_and_evaluate(
+    streamer: OddsStreamer,
+    football_cache: OddsCache,
+    basketball_cache: BasketballOddsCache,
+):
     while True:
         event = await streamer.out_queue.get()
-        betway_rows = betway_cache.get_rows()
+        betway_rows = football_cache.get_rows() + basketball_cache.get_rows()
         try:
             evaluate_pinnacle_event(event, betway_rows)
         except Exception as e:
@@ -24,13 +20,16 @@ async def consume_and_evaluate(streamer: OddsStreamer, betway_cache: OddsCache):
 
 
 async def main():
-    betway_cache = OddsCache()
-    betway_cache.start()
+    football_cache = OddsCache()
+    football_cache.start()
 
-    print("[orchestrator] Waiting for first Betway fetch...")
-    while not betway_cache.is_ready():
+    basketball_cache = BasketballOddsCache()
+    basketball_cache.start()
+
+    print("[orchestrator] Waiting for first Betway fetches (football + basketball)...")
+    while not (football_cache.is_ready() and basketball_cache.is_ready()):
         await asyncio.sleep(0.1)
-    print("[orchestrator] Betway cache ready. Starting Pinnacle stream...")
+    print("[orchestrator] Both caches ready. Starting Pinnacle stream...")
 
     out_queue = asyncio.Queue()
     streamer = OddsStreamer(out_queue)
@@ -47,7 +46,7 @@ async def main():
 
     await asyncio.gather(
         streamer.run(),
-        consume_and_evaluate(streamer, betway_cache),
+        consume_and_evaluate(streamer, football_cache, basketball_cache),
     )
 
 

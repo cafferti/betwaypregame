@@ -1,9 +1,11 @@
 import time
 import threading
+import concurrent.futures
 import requests
 from datetime import datetime, timezone
 
 BASE_URL = "https://feeds-roa2.betwayafrica.com/br/_apis/sport/v1/BetBook/Upcoming/"
+EVENT_MARKETS_URL = "https://feeds-roa2.betwayafrica.com/br/_apis/sport/v1/MarketGroupings/MarketGroupNamesAndMarketsForEvent"
 
 HEADERS = {
     "Accept": "application/json, text/plain, */*",
@@ -21,13 +23,28 @@ MAX_PAGES = 15
 REFRESH_INTERVAL_SECONDS = 15
 MAX_BACKOFF_SECONDS = 120
 
+BASKETBALL_PAGE_SIZE = 200
+BASKETBALL_MAX_PAGES_GUESS = 4
+BASKETBALL_LISTING_WORKERS = BASKETBALL_MAX_PAGES_GUESS
+BASKETBALL_PER_EVENT_WORKERS = 5
+BASKETBALL_REFRESH_INTERVAL_SECONDS = (
+    20  # per-event N+1 calls — slower than football, less frequent
+)
+
+# Confirmed via DevTools capture against real Betway responses.
+BASKETBALL_TARGET_MARKET_DISPLAY_NAMES = {
+    "Winner (Incl. OT)",
+    "Handicap (Incl. Overtime)",
+    "Total (Incl. Overtime)",
+}
+
 _session_lock = threading.Lock()
 _session = None
 
 
 def _new_session():
     s = requests.Session()
-    adapter = requests.adapters.HTTPAdapter(pool_connections=2, pool_maxsize=2)
+    adapter = requests.adapters.HTTPAdapter(pool_connections=5, pool_maxsize=5)
     s.mount("https://", adapter)
     return s
 
@@ -74,8 +91,13 @@ def _get_with_retry(url, params):
         except requests.exceptions.RequestException as e:
             last_exc = e
             time.sleep(RETRY_BACKOFF_SECONDS * (2**attempt))
-    print(f"[betway] ERROR: giving up on page fetch — {last_exc}")
+    print(f"[betway] ERROR: giving up — {last_exc}")
     return None
+
+
+# ============================================================
+# FOOTBALL
+# ============================================================
 
 
 def fetch_page(skip):
@@ -281,18 +303,236 @@ class OddsCache:
         return self.age_seconds() is not None
 
 
-def main():
-    cache = OddsCache()
-    cache.start()
+# ============================================================
+# BASKETBALL
+# ============================================================
 
-    while not cache.is_ready():
+
+def fetch_basketball_listing_page(skip):
+    params = {
+        "countryCode": "NG",
+        "sportId": "basketball",
+        "Skip": skip,
+        "Take": BASKETBALL_PAGE_SIZE,
+        "cultureCode": "en-US",
+        "isEsport": "false",
+        "boostedOnly": "false",
+    }
+    url_params = list(params.items()) + [
+        ("marketTypes", "Winner (Incl. Overtime)"),
+    ]
+    return _get_with_retry(BASE_URL, url_params)
+
+
+def fetch_all_basketball_events(
+    max_pages=BASKETBALL_MAX_PAGES_GUESS, workers=BASKETBALL_LISTING_WORKERS
+):
+    skips = [i * BASKETBALL_PAGE_SIZE for i in range(max_pages)]
+    results_by_skip = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
+        future_to_skip = {
+            executor.submit(fetch_basketball_listing_page, skip): skip for skip in skips
+        }
+        for future in concurrent.futures.as_completed(future_to_skip):
+            skip = future_to_skip[future]
+            try:
+                results_by_skip[skip] = future.result()
+            except Exception as e:
+                print(f"[basketball] ERROR: listing page skip={skip} failed — {e}")
+                results_by_skip[skip] = None
+
+    all_events = []
+    for skip in skips:
+        data = results_by_skip.get(skip)
+        if data is None:
+            continue
+        all_events.extend(data.get("events", []))
+        if data.get("isFinalPage", True):
+            break
+
+    return all_events
+
+
+def fetch_basketball_event_markets(event_id):
+    params = {
+        "eventId": event_id,
+        "marketGroupId": " ",
+        "countryCode": "NG",
+        "cultureCode": "en-US",
+        "skip": 0,
+        "take": 40,
+        "isBuildABetOnly": "false",
+        "searchQuery": "",
+    }
+    data = _get_with_retry(EVENT_MARKETS_URL, params)
+    if data is None:
+        return []
+
+    target_markets = {
+        m["marketId"]: m
+        for m in data.get("marketsInGroup", [])
+        if m.get("displayName") in BASKETBALL_TARGET_MARKET_DISPLAY_NAMES
+    }
+    if not target_markets:
+        return []
+
+    prices_by_outcome = {p["outcomeId"]: p for p in data.get("prices", [])}
+
+    outcomes_by_market = {}
+    for o in data.get("outcomes", []):
+        if not o.get("shouldDisplay", True):
+            continue
+        if o.get("marketId") in target_markets:
+            outcomes_by_market.setdefault(o["marketId"], []).append(o)
+
+    market_blocks = []
+    for market_id, market in target_markets.items():
+        outcome_rows = []
+        for o in outcomes_by_market.get(market_id, []):
+            price = prices_by_outcome.get(o["outcomeId"])
+            price_val = price.get("priceDecimal") if price else None
+            if price_val in (None, 0):
+                continue
+
+            handicap_val = o.get("handicap")
+            line_val = handicap_val if handicap_val not in (None, "", 0) else ""
+
+            outcome_rows.append(
+                {
+                    "name": (o.get("name") or "").strip(),
+                    "line": line_val,
+                    "price": price_val,
+                }
+            )
+
+        if not outcome_rows:
+            continue
+
+        market_blocks.append(
+            {
+                "marketId": market_id,
+                "displayName": market.get("displayName"),
+                "outcomes": outcome_rows,
+            }
+        )
+
+    return market_blocks
+
+
+def build_basketball_odds_table(events, max_workers=BASKETBALL_PER_EVENT_WORKERS):
+    results = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_event = {
+            executor.submit(fetch_basketball_event_markets, e["eventId"]): e
+            for e in events
+        }
+        for future in concurrent.futures.as_completed(future_to_event):
+            event = future_to_event[future]
+            try:
+                market_blocks = future.result()
+            except Exception as e:
+                print(
+                    f"[basketball] ERROR: event {event.get('eventId')} markets failed — {e}"
+                )
+                continue
+
+            if not market_blocks:
+                continue
+
+            results.append(
+                {
+                    "eventId": event.get("eventId"),
+                    "home": event.get("homeTeam"),
+                    "away": event.get("awayTeam"),
+                    "league": event.get("league"),
+                    "region": event.get("region"),
+                    "kickoff_epoch": event.get("expectedStartEpoch"),
+                    "markets": market_blocks,
+                }
+            )
+
+    return results
+
+
+class BasketballOddsCache:
+    def __init__(self, refresh_interval_seconds=BASKETBALL_REFRESH_INTERVAL_SECONDS):
+        self.refresh_interval_seconds = refresh_interval_seconds
+        self._rows = []
+        self._last_updated = None
+        self._lock = threading.Lock()
+        self._stop_event = threading.Event()
+        self._thread = None
+        self.fail_count = 0
+        self.success_count = 0
+        self._consecutive_failures = 0
+
+    def start(self):
+        self._thread = threading.Thread(target=self._run_loop, daemon=True)
+        self._thread.start()
+
+    def stop(self):
+        self._stop_event.set()
+        if self._thread:
+            self._thread.join(timeout=5)
+
+    def _run_loop(self):
+        while not self._stop_event.is_set():
+            try:
+                events = fetch_all_basketball_events()
+                rows = build_basketball_odds_table(events)
+                with self._lock:
+                    self._rows = rows
+                    self._last_updated = time.time()
+                    self.success_count += 1
+                self._consecutive_failures = 0
+                wait_time = self.refresh_interval_seconds
+                print(
+                    f"[basketball] cache refreshed ok — {len(rows)} event/market rows "
+                    f"(success #{self.success_count})"
+                )
+            except Exception as e:
+                self.fail_count += 1
+                self._consecutive_failures += 1
+                wait_time = min(
+                    MAX_BACKOFF_SECONDS,
+                    self.refresh_interval_seconds * (2**self._consecutive_failures),
+                )
+                print(
+                    f"[basketball] ERROR: background refresh failed (#{self._consecutive_failures}) "
+                    f"— {e} — backing off {wait_time:.0f}s"
+                )
+            self._stop_event.wait(wait_time)
+
+    def get_rows(self):
+        with self._lock:
+            return self._rows
+
+    def age_seconds(self):
+        with self._lock:
+            if self._last_updated is None:
+                return None
+            return time.time() - self._last_updated
+
+    def is_ready(self):
+        return self.age_seconds() is not None
+
+
+def main():
+    football_cache = OddsCache()
+    football_cache.start()
+
+    basketball_cache = BasketballOddsCache()
+    basketball_cache.start()
+
+    while not (football_cache.is_ready() and basketball_cache.is_ready()):
         time.sleep(0.1)
 
     try:
         while True:
             time.sleep(2)
     except KeyboardInterrupt:
-        cache.stop()
+        football_cache.stop()
+        basketball_cache.stop()
 
 
 if __name__ == "__main__":
