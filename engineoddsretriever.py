@@ -27,11 +27,8 @@ BASKETBALL_PAGE_SIZE = 200
 BASKETBALL_MAX_PAGES_GUESS = 4
 BASKETBALL_LISTING_WORKERS = BASKETBALL_MAX_PAGES_GUESS
 BASKETBALL_PER_EVENT_WORKERS = 5
-BASKETBALL_REFRESH_INTERVAL_SECONDS = (
-    20  # per-event N+1 calls — slower than football, less frequent
-)
+BASKETBALL_REFRESH_INTERVAL_SECONDS = 20
 
-# Confirmed via DevTools capture against real Betway responses.
 BASKETBALL_TARGET_MARKET_DISPLAY_NAMES = {
     "Winner (Incl. OT)",
     "Handicap (Incl. Overtime)",
@@ -209,6 +206,17 @@ def build_odds_table(data):
                         "name": outcome.get("name"),
                         "line": _clean_line(line_val),
                         "price": price_val,
+                        "outcomeId": outcome.get("outcomeId"),
+                        "marketId": market.get("marketId"),
+                        "eventId": event_id,
+                        "priceNum": price.get("numerator"),
+                        "priceDen": price.get("denominator"),
+                        "eventVersion": event.get("version"),
+                        "marketVersion": market.get("version"),
+                        "outcomeVersion": outcome.get("version"),
+                        "priceVersion": price.get("version"),
+                        "serverEmopSource": price.get("emopSource"),
+                        "publicHubPublishedTime": price.get("publicHubPublishedTime"),
                     }
                 )
 
@@ -273,8 +281,7 @@ class OddsCache:
                 self._consecutive_failures = 0
                 wait_time = self.refresh_interval_seconds
                 print(
-                    f"[betway] cache refreshed ok — {len(rows)} event/market rows "
-                    f"(success #{self.success_count})"
+                    f"[football] engineoddsretriever.py executed successfully — {len(rows)} rows"
                 )
             except Exception as e:
                 self.fail_count += 1
@@ -284,8 +291,7 @@ class OddsCache:
                     self.refresh_interval_seconds * (2**self._consecutive_failures),
                 )
                 print(
-                    f"[betway] ERROR: background refresh failed (#{self._consecutive_failures}) "
-                    f"— {e} — backing off {wait_time:.0f}s"
+                    f"[football] ERROR: refresh failed (#{self._consecutive_failures}) — {e} — backing off {wait_time:.0f}s"
                 )
             self._stop_event.wait(wait_time)
 
@@ -368,6 +374,15 @@ def fetch_basketball_event_markets(event_id):
     if data is None:
         return []
 
+    # Try to find a real event version in this response; fall back to
+    # market version if the endpoint doesn't expose one (Strike rejects
+    # null, so we must never send None here).
+    event_version = None
+    for e in data.get("events", []):
+        if e.get("eventId") == event_id:
+            event_version = e.get("version")
+            break
+
     target_markets = {
         m["marketId"]: m
         for m in data.get("marketsInGroup", [])
@@ -402,6 +417,19 @@ def fetch_basketball_event_markets(event_id):
                     "name": (o.get("name") or "").strip(),
                     "line": line_val,
                     "price": price_val,
+                    "outcomeId": o.get("outcomeId"),
+                    "marketId": market_id,
+                    "eventId": event_id,
+                    "priceNum": price.get("numerator"),
+                    "priceDen": price.get("denominator"),
+                    "eventVersion": event_version
+                    if event_version is not None
+                    else market.get("version"),
+                    "marketVersion": market.get("version"),
+                    "outcomeVersion": o.get("version"),
+                    "priceVersion": price.get("version"),
+                    "serverEmopSource": price.get("emopSource"),
+                    "publicHubPublishedTime": price.get("publicHubPublishedTime"),
                 }
             )
 
@@ -487,8 +515,7 @@ class BasketballOddsCache:
                 self._consecutive_failures = 0
                 wait_time = self.refresh_interval_seconds
                 print(
-                    f"[basketball] cache refreshed ok — {len(rows)} event/market rows "
-                    f"(success #{self.success_count})"
+                    f"[basketball] engineoddsretriever.py executed successfully — {len(rows)} rows"
                 )
             except Exception as e:
                 self.fail_count += 1
@@ -498,8 +525,7 @@ class BasketballOddsCache:
                     self.refresh_interval_seconds * (2**self._consecutive_failures),
                 )
                 print(
-                    f"[basketball] ERROR: background refresh failed (#{self._consecutive_failures}) "
-                    f"— {e} — backing off {wait_time:.0f}s"
+                    f"[basketball] ERROR: refresh failed (#{self._consecutive_failures}) — {e} — backing off {wait_time:.0f}s"
                 )
             self._stop_event.wait(wait_time)
 

@@ -1,96 +1,168 @@
 from playwright.sync_api import sync_playwright
+import requests
+import uuid
 import os
-import json
-import time
 
 
-def find_betway_bet_placement_api():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    profile_path = os.path.join(script_dir, "betway_profile")
+def get_current_token(page):
+    return page.evaluate("() => localStorage.getItem('prod_auth._token')")
 
-    captured_count = 0
 
-    with sync_playwright() as p:
-        context = p.chromium.launch_persistent_context(
-            user_data_dir=profile_path,
-            headless=False,
+def place_bet(auth_token, event, stake_naira):
+    """
+    event dict must contain:
+      eventId, marketId, outcomeId, priceNum, priceDen, priceDec, handicap,
+      eventVersion, marketVersion, outcomeVersion, priceVersion,
+      serverEmopSource, publicHubPublishedTime
+    """
+    url = "https://www.betway.com.ng/appsynapse/bet-api-sr02/v2/Betting/Strike"
+    headers = {
+        "authorization": f"Bearer {auth_token}",
+        "content-type": "application/json",
+        "x-brand-id": "f8a8d16a-d619-4b49-aa8c-f21211403c92",
+        "origin": "https://www.betway.com.ng",
+        "referer": "https://www.betway.com.ng/",
+    }
+    payload = {
+        "countryCode": "NG",
+        "betRequests": [
+            {
+                "requestId": str(uuid.uuid4()),
+                "paymentType": 1,
+                "betSelectionType": "Normal",
+                "numberOfLines": 1,
+                "acceptPriceChange": "None",
+                "isEachWay": False,
+                "channel": "web",
+                "handicap": event["handicap"],
+                "priceNum": event["priceNum"],
+                "priceDen": event["priceDen"],
+                "referringBookingCode": "",
+                "wagerAmount": stake_naira,
+                "bets": [
+                    {
+                        "priceType": "Normal",
+                        "handicap": event["handicap"],
+                        "priceDen": event["priceDen"],
+                        "priceNum": event["priceNum"],
+                        "priceDec": event["priceDec"],
+                        "isEachWayActive": False,
+                        "eventId": event["eventId"],
+                        "marketId": event["marketId"],
+                        "displayMarketId": event["marketId"],
+                        "outcomeId": [event["outcomeId"]],
+                        "eventVersion": event["eventVersion"],
+                        "marketVersion": event["marketVersion"],
+                        "outcomeVersion": event["outcomeVersion"],
+                        "priceVersion": event["priceVersion"],
+                        "serverEmopSource": event["serverEmopSource"],
+                        "publicHubPublishedTime": event["publicHubPublishedTime"],
+                    }
+                ],
+            }
+        ],
+    }
+    resp = requests.post(url, headers=headers, json=payload, timeout=10)
+    try:
+        return resp.status_code, resp.json()
+    except ValueError:
+        return resp.status_code, {"raw": resp.text}
+
+
+class BetPlacer:
+    def __init__(self, profile_path=None, max_stake=100, daily_cap=1000):
+        self.script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.profile_path = profile_path or os.path.join(
+            self.script_dir, "betway_profile"
+        )
+        self.max_stake = max_stake
+        self.daily_cap = daily_cap
+        self.spent_today = 0
+        self._playwright = None
+        self._context = None
+        self._page = None
+        self.token = None
+
+    def start(self):
+        self._playwright = sync_playwright().start()
+        self._context = self._playwright.chromium.launch_persistent_context(
+            user_data_dir=self.profile_path,
+            headless=True,
             channel="chrome",
-            no_viewport=True,
         )
+        self._page = self._context.new_page()
+        self._page.goto("https://www.betway.com.ng/")
+        self._page.wait_for_load_state("domcontentloaded")
 
-        page = context.new_page()
+        for attempt in range(15):
+            self.token = get_current_token(self._page)
+            if self.token:
+                break
+            self._page.wait_for_timeout(1000)
 
-        def handle_request(request):
-            # Bet placement is virtually always a POST/PUT with a JSON body
-            if request.method not in ("POST", "PUT"):
-                return
-            if "betway" not in request.url and "betwayafrica" not in request.url:
-                return
+        if not self.token:
+            raise RuntimeError(
+                "No token found in localStorage after 15s — check that "
+                "betway_profile/ exists next to this script and contains "
+                "a valid saved login."
+            )
+        print("[betplacer] betplacer.py executed successfully — session token loaded")
 
-            print(f"\n{'#' * 80}")
-            print(f"➡️  {request.method} REQUEST: {request.url}")
-            post_data = request.post_data
-            if post_data:
-                # Try to pretty-print if it's JSON
-                try:
-                    parsed = json.loads(post_data)
-                    print(f"Body:\n{json.dumps(parsed, indent=2)}")
-                except Exception:
-                    print(f"Body (raw): {post_data}")
-            print(f"{'#' * 80}")
+    def stop(self):
+        if self._context:
+            self._context.close()
+        if self._playwright:
+            self._playwright.stop()
 
-        def handle_response(response):
-            nonlocal captured_count
-            request = response.request
-            if request.method not in ("POST", "PUT"):
-                return
-            if "betway" not in response.url and "betwayafrica" not in response.url:
-                return
+    def refresh_token(self):
+        if self._page:
+            self.token = get_current_token(self._page)
+        return self.token
 
-            try:
-                content_type = response.headers.get("content-type", "")
-            except Exception:
-                return
-            if "application/json" not in content_type:
-                return
+    def try_place(self, event, stake_naira):
+        stake = min(stake_naira, self.max_stake)
 
-            try:
-                body_text = response.text()
-                body = json.loads(body_text)
-                preview = json.dumps(body, indent=2)[:3000]
-            except Exception as e:
-                print(f"⚠️ Could not read response body: {e}")
-                return
+        if self.spent_today + stake > self.daily_cap:
+            return {"skipped": "daily_cap_reached", "spent_today": self.spent_today}
 
-            captured_count += 1
-            print(f"\n{'=' * 80}")
-            print(f"📡 [{captured_count}] RESPONSE for {response.url}")
-            print(f"Status: {response.status}")
-            print(f"Body:\n{preview}")
-            print(f"{'=' * 80}")
+        if not self.token:
+            return {
+                "error": "no_token",
+                "detail": "BetPlacer has no token — was start() called?",
+            }
 
-        page.on("request", handle_request)
-        page.on("response", handle_response)
+        required_fields = [
+            "eventId",
+            "marketId",
+            "outcomeId",
+            "priceNum",
+            "priceDen",
+            "priceDec",
+            "handicap",
+            "eventVersion",
+            "marketVersion",
+            "outcomeVersion",
+            "priceVersion",
+        ]
+        missing = [f for f in required_fields if event.get(f) is None]
+        if missing:
+            return {"skipped": "missing_fields", "fields": missing}
 
-        print("🌐 Opening betway.com.ng...")
-        page.goto("https://www.betway.com.ng/", wait_until="domcontentloaded")
+        status_code, result = place_bet(self.token, event, stake)
 
-        print("\n⚠️  IMPORTANT — MANUAL STEPS:")
-        print("1. Find any pregame football match with low odds (favorite).")
-        print("2. Add it to your bet slip.")
-        print("3. Enter the SMALLEST possible stake (e.g. ₦100).")
-        print("4. Click 'Place Bet' and confirm.")
-        print("5. Wait for the bet confirmation to appear on screen.")
-        print(
-            "👉 Every POST/PUT request+response involving betway will print here automatically."
-        )
+        if status_code == 401 or result.get("isSuccessful") is False:
+            fresh_token = self.refresh_token()
+            if fresh_token and fresh_token != self.token:
+                self.token = fresh_token
+                status_code, result = place_bet(self.token, event, stake)
 
-        input("\n⏸️  Press ENTER once your bet is placed and confirmed on screen...")
+        if status_code == 401 or result.get("isSuccessful") is False:
+            return {
+                "error": "bet_failed",
+                "status_code": status_code,
+                "response": result,
+                "note": "token likely expired — re-run launch_and_save_session.py to refresh it manually",
+            }
 
-        print(f"\n✅ Captured {captured_count} responses. Closing in 3 seconds...")
-        time.sleep(3)
-        context.close()
-
-
-if __name__ == "__main__":
-    find_betway_bet_placement_api()
+        self.spent_today += stake
+        return {"status_code": status_code, "response": result, "stake": stake}

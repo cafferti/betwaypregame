@@ -1,0 +1,3 @@
+Add-Content .gitignore "betway_profile/"
+Add-Content .gitignore "__pycache__/"
+Add-Content .gitignore "*.pyc"
