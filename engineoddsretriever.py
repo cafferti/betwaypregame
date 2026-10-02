@@ -3,6 +3,7 @@ import threading
 import concurrent.futures
 import requests
 from datetime import datetime, timezone
+from difflib import SequenceMatcher
 
 BASE_URL = "https://feeds-roa2.betwayafrica.com/br/_apis/sport/v1/BetBook/Upcoming/"
 EVENT_MARKETS_URL = "https://feeds-roa2.betwayafrica.com/br/_apis/sport/v1/MarketGroupings/MarketGroupNamesAndMarketsForEvent"
@@ -34,6 +35,9 @@ BASKETBALL_TARGET_MARKET_DISPLAY_NAMES = {
     "Handicap (Incl. Overtime)",
     "Total (Incl. Overtime)",
 }
+
+TEAM_MATCH_THRESHOLD_LIVE = 0.60
+MAX_LINE_DISTANCE_LIVE = 2
 
 _session_lock = threading.Lock()
 _session = None
@@ -90,6 +94,14 @@ def _get_with_retry(url, params):
             time.sleep(RETRY_BACKOFF_SECONDS * (2**attempt))
     print(f"[betway] ERROR: giving up — {last_exc}")
     return None
+
+
+def _normalize_name(name: str) -> str:
+    return (name or "").lower().strip()
+
+
+def _team_similarity(a: str, b: str) -> float:
+    return SequenceMatcher(None, _normalize_name(a), _normalize_name(b)).ratio()
 
 
 # ============================================================
@@ -374,9 +386,6 @@ def fetch_basketball_event_markets(event_id):
     if data is None:
         return []
 
-    # Try to find a real event version in this response; fall back to
-    # market version if the endpoint doesn't expose one (Strike rejects
-    # null, so we must never send None here).
     event_version = None
     for e in data.get("events", []):
         if e.get("eventId") == event_id:
@@ -541,6 +550,153 @@ class BasketballOddsCache:
 
     def is_ready(self):
         return self.age_seconds() is not None
+
+
+# ============================================================
+# LIVE PER-BET MARKET RESOLUTION (spread / total only)
+# ============================================================
+
+
+def resolve_live_bet_target(event_id, line_type, target_line, outcome_side, team_name):
+    """
+    Live, per-event lookup for the exact child market + outcome to bet on,
+    for a spread ("handicap") or total bet. Returns a dict with everything
+    betplacer.place_bet() needs (handicap already scaled to Betway's
+    integer format, e.g. 0.5 -> 50, PLUS rawHandicap, the unscaled value,
+    for EV/display purposes), or None if no matching line was found live.
+    """
+    params = {
+        "eventId": event_id,
+        "marketGroupId": " ",
+        "countryCode": "NG",
+        "cultureCode": "en-US",
+        "skip": 0,
+        "take": 40,
+        "isBuildABetOnly": "false",
+        "searchQuery": "",
+    }
+    data = _get_with_retry(EVENT_MARKETS_URL, params)
+    if data is None:
+        print(
+            f"[resolve] event {event_id}: _get_with_retry returned None (request failed)"
+        )
+        return None
+
+    event_version = None
+    for e in data.get("events", []):
+        if e.get("eventId") == event_id:
+            event_version = e.get("version")
+            break
+
+    keyword = "handicap" if line_type == "spread" else "total"
+
+    all_markets = data.get("marketsInGroup", [])
+
+    candidate_markets = []
+    for m in all_markets:
+        if m.get("isSquashedParent"):
+            continue
+        if m.get("isSuspended"):
+            continue
+        display = (m.get("displayName") or "").lower()
+        name = (m.get("name") or "").lower()
+        if keyword not in display and keyword not in name:
+            continue
+        candidate_markets.append(m)
+
+    if not candidate_markets:
+        print(
+            f"[resolve] event {event_id}: NO candidate markets matched keyword '{keyword}' — bailing"
+        )
+        return None
+
+    best_market = None
+    best_diff = None
+    for m in candidate_markets:
+        h = m.get("handicap")
+        try:
+            h = float(h)
+        except (ValueError, TypeError):
+            continue
+        diff = abs(h - target_line)
+        if best_diff is None or diff < best_diff:
+            best_diff = diff
+            best_market = m
+
+    if best_market is None:
+        print(
+            f"[resolve] event {event_id}: no candidate market had a parseable handicap value — bailing"
+        )
+        return None
+
+    if best_diff > MAX_LINE_DISTANCE_LIVE:
+        print(
+            f"[resolve] event {event_id}: best_diff {best_diff} > MAX_LINE_DISTANCE_LIVE "
+            f"{MAX_LINE_DISTANCE_LIVE} — bailing"
+        )
+        return None
+
+    market_id = best_market.get("marketId")
+    prices_by_outcome = {p["outcomeId"]: p for p in data.get("prices", [])}
+
+    candidate_outcomes = [
+        o
+        for o in data.get("outcomes", [])
+        if str(o.get("outcomeId", "")).startswith(str(market_id))
+        and o.get("shouldDisplay", True)
+    ]
+
+    matched_outcome = None
+    if line_type == "spread":
+        best_score = 0.0
+        for o in candidate_outcomes:
+            score = _team_similarity(o.get("name", ""), team_name)
+            if score > best_score:
+                best_score = score
+                matched_outcome = o
+        if best_score < TEAM_MATCH_THRESHOLD_LIVE:
+            matched_outcome = None
+    elif line_type == "total":
+        for o in candidate_outcomes:
+            if (o.get("name") or "").strip().lower() == outcome_side:
+                matched_outcome = o
+                break
+
+    if matched_outcome is None:
+        return None
+
+    price = prices_by_outcome.get(matched_outcome.get("outcomeId"))
+    if not price:
+        return None
+    price_val = price.get("priceDecimal")
+    if price_val in (None, 0):
+        return None
+
+    market_handicap = best_market.get("handicap", 0) or 0
+    try:
+        raw_handicap = float(market_handicap)
+    except (ValueError, TypeError):
+        raw_handicap = 0.0
+    scaled_handicap = int(round(raw_handicap * 100))
+
+    return {
+        "eventId": event_id,
+        "marketId": market_id,
+        "outcomeId": matched_outcome.get("outcomeId"),
+        "priceNum": price.get("numerator"),
+        "priceDen": price.get("denominator"),
+        "priceDec": price_val,
+        "handicap": scaled_handicap,
+        "rawHandicap": raw_handicap,
+        "eventVersion": event_version
+        if event_version is not None
+        else best_market.get("version"),
+        "marketVersion": best_market.get("version"),
+        "outcomeVersion": matched_outcome.get("version"),
+        "priceVersion": price.get("version"),
+        "serverEmopSource": price.get("emopSource"),
+        "publicHubPublishedTime": price.get("publicHubPublishedTime"),
+    }
 
 
 def main():

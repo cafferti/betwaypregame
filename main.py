@@ -29,7 +29,6 @@ bet_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
 
 
 def _play_sound(kind: str):
-    """kind: 'passed' or 'placed' — distinct tones, Windows only (winsound)."""
     if sys.platform != "win32":
         return
     try:
@@ -100,35 +99,8 @@ def save_bet_record(outcome_id, desc: str, bet_result: dict):
 # ============================================================
 
 
-def _build_bet_event(result: dict):
-    return {
-        "eventId": result["betway_event_id"],
-        "marketId": result["betway_market_id"],
-        "outcomeId": result["outcomeId"],
-        "priceNum": result["priceNum"],
-        "priceDen": result["priceDen"],
-        "priceDec": result["betway_price"],
-        "handicap": result.get("betway_line") or 0,
-        "eventVersion": result["eventVersion"],
-        "marketVersion": result["marketVersion"],
-        "outcomeVersion": result["outcomeVersion"],
-        "priceVersion": result["priceVersion"],
-        "serverEmopSource": result["serverEmopSource"],
-        "publicHubPublishedTime": result["publicHubPublishedTime"],
-    }
-
-
 def _describe_result(result: dict) -> str:
     return f"{result['home']} vs {result['away']} [{result['league']}] {result['outcome']} {result['points']}"
-
-
-def _print_filter_pass(result: dict):
-    print(
-        f"🟢 PASSED FILTER — {_describe_result(result)} "
-        f"| EV {result['ev_percent']}% | Betway {result['betway_price']} vs NVP {result['nvp']} "
-        f"| drop {result['drop_percent']}% | {result['minutes_to_kickoff']:.0f}min to kickoff"
-    )
-    _play_sound("passed")
 
 
 def _print_bet_outcome(result: dict, bet_result: dict) -> bool:
@@ -166,6 +138,24 @@ def _print_bet_outcome(result: dict, bet_result: dict) -> bool:
         return False
 
 
+def _build_bet_event(result: dict):
+    return {
+        "eventId": result["betway_event_id"],
+        "marketId": result["betway_market_id"],
+        "outcomeId": result["outcomeId"],
+        "priceNum": result["priceNum"],
+        "priceDen": result["priceDen"],
+        "priceDec": result["betway_price"],
+        "handicap": result.get("betway_handicap_scaled") or 0,
+        "eventVersion": result["eventVersion"],
+        "marketVersion": result["marketVersion"],
+        "outcomeVersion": result["outcomeVersion"],
+        "priceVersion": result["priceVersion"],
+        "serverEmopSource": result["serverEmopSource"],
+        "publicHubPublishedTime": result["publicHubPublishedTime"],
+    }
+
+
 # ============================================================
 # MAIN LOOP
 # ============================================================
@@ -185,7 +175,11 @@ async def consume_and_evaluate(
         betway_rows = football_cache.get_rows() + basketball_cache.get_rows()
 
         try:
-            result = evaluate_pinnacle_event(event, betway_rows)
+            # evaluate_pinnacle_event may block on a live network call
+            # for spread/total candidates — run off the event loop.
+            result = await loop.run_in_executor(
+                None, evaluate_pinnacle_event, event, betway_rows
+            )
         except Exception as e:
             print(f"[orchestrator] ERROR: evaluate_pinnacle_event failed — {e}")
             continue
@@ -196,7 +190,7 @@ async def consume_and_evaluate(
         if result is None:
             continue
 
-        _print_filter_pass(result)
+        _play_sound("passed")
 
         required = [
             "betway_event_id",
@@ -214,7 +208,7 @@ async def consume_and_evaluate(
             )
             continue
 
-        outcome_key = result["outcomeId"]
+        outcome_key = f"{result['line_type']}:{result['outcomeId']}"
         if outcome_key in already_bet:
             print(
                 f"⏭️  BET SKIPPED [already_bet_this_outcome] — {_describe_result(result)}"

@@ -1,4 +1,5 @@
 from difflib import SequenceMatcher
+from engineoddsretriever import resolve_live_bet_target
 
 SPORT_ID_SOCCER = "1"
 SPORT_ID_BASKETBALL = "3"
@@ -9,14 +10,23 @@ MONEYLINE_KEYWORDS = {
     "basketball": "winner",
 }
 
-MIN_DROP_PERCENT = 8.0
-MIN_MINUTES_TO_KICKOFF = 15
-MAX_MINUTES_TO_KICKOFF = 24 * 60
-MIN_EV_PERCENT = 1.5
-MAX_NVP = 3.5
-
 TEAM_MATCH_THRESHOLD = 0.60
-MAX_LINE_DISTANCE = 5.0
+
+# Per-category (sport, line_type, side) -> (min_ev_percent, max_nvp).
+# side is "over"/"under" for totals, "+"/"-" for spreads, None for moneyline.
+# A missing or None entry means that category is EXCLUDED — no bets placed.
+CATEGORY_THRESHOLDS = {
+    ("basketball", "total", "over"): (4.0, 2.5),
+    ("basketball", "total", "under"): None,  # unders excluded
+    ("basketball", "spread", "+"): (5.0, 2.5),
+    ("basketball", "spread", "-"): (6.0, 2.5),
+    ("basketball", "money_line", None): (7.0, 2.5),
+    ("football", "money_line", None): (6.0, 2.7),
+    ("football", "total", "over"): (4.0, 2.5),
+    ("football", "total", "under"): None,  # unders excluded
+    ("football", "spread", "+"): (5.0, 2.5),
+    ("football", "spread", "-"): None,  # PENDING — no criteria given yet
+}
 
 
 class Stats:
@@ -134,6 +144,7 @@ def identify_sport(event: dict):
 
 
 def minutes_to_kickoff(event: dict):
+    """Kept for display only — not used as a filter anymore."""
     try:
         starts_ms = int(event.get("starts", 0))
         timestamp_ms = int(event.get("timestamp", 0))
@@ -148,6 +159,25 @@ def _normalize(name: str) -> str:
 
 def _team_similarity(a: str, b: str) -> float:
     return SequenceMatcher(None, _normalize(a), _normalize(b)).ratio()
+
+
+def _get_category_thresholds(sport: str, line_type: str, outcome_label: str, points):
+    if line_type == "money_line":
+        key = (sport, "money_line", None)
+    elif line_type == "total":
+        side = outcome_label if outcome_label in ("over", "under") else None
+        key = (sport, "total", side)
+    elif line_type == "spread":
+        try:
+            pts = float(points) if points not in (None, "") else 0.0
+        except (ValueError, TypeError):
+            pts = 0.0
+        side = "+" if pts >= 0 else "-"
+        key = (sport, "spread", side)
+    else:
+        return None
+
+    return CATEGORY_THRESHOLDS.get(key)
 
 
 def find_matching_betway_event(
@@ -187,140 +217,192 @@ def find_matching_betway_event(
     return best_row
 
 
-def _find_nearest_line_outcome(
-    market_outcomes, target_name_filter, points, max_distance=MAX_LINE_DISTANCE
-):
-    best_price = None
-    best_line = None
-    best_diff = None
-    best_outcome = None
-
-    for o in market_outcomes:
-        if target_name_filter is not None and o["name"].lower() != target_name_filter:
-            continue
-        try:
-            line_val = float(o["line"])
-        except (ValueError, TypeError):
-            continue
-
-        diff = abs(line_val - points)
-        if best_diff is None or diff < best_diff:
-            best_diff = diff
-            best_line = line_val
-            best_price = o["price"]
-            best_outcome = o
-
-    if best_price is None:
-        return None, None, None, None
-    if best_diff > max_distance:
-        return None, None, None, None
-
-    is_exact = best_diff <= 0.01
-    return best_price, best_line, is_exact, best_outcome
-
-
-def find_betway_price(betway_row: dict, pinnacle_event: dict, sport: str):
-    line_type = pinnacle_event.get("lineType")
+def find_betway_price_moneyline(betway_row: dict, pinnacle_event: dict, sport: str):
+    """
+    Cached-data moneyline lookup. "draw" is matched explicitly against
+    the outcome's own name, not inferred as "not home" — matching the
+    away team's name for a draw would misprice or mis-bet.
+    """
     outcome_side = (pinnacle_event.get("outcome") or "").lower()
 
-    try:
-        points = float(pinnacle_event.get("points") or 0)
-    except (ValueError, TypeError):
-        points = 0.0
-
-    team_name = (
-        pinnacle_event["home"] if outcome_side == "home" else pinnacle_event["away"]
-    )
+    if outcome_side == "draw":
+        target_name = "draw"
+        is_draw = True
+    else:
+        target_name = (
+            pinnacle_event["home"] if outcome_side == "home" else pinnacle_event["away"]
+        )
+        is_draw = False
 
     for market in betway_row.get("markets", []):
         display_name = (market.get("displayName") or "").lower()
+        keyword = MONEYLINE_KEYWORDS.get(sport)
+        if not keyword or keyword not in display_name.replace(" ", ""):
+            continue
+        for o in market["outcomes"]:
+            outcome_name = (o.get("name") or "").strip().lower()
+            if is_draw:
+                if outcome_name == "draw":
+                    return o["price"], o
+            else:
+                if _team_similarity(o["name"], target_name) >= TEAM_MATCH_THRESHOLD:
+                    return o["price"], o
 
-        if line_type == "money_line":
-            keyword = MONEYLINE_KEYWORDS.get(sport)
-            if not keyword or keyword not in display_name.replace(" ", ""):
-                continue
-            for o in market["outcomes"]:
-                if _team_similarity(o["name"], team_name) >= TEAM_MATCH_THRESHOLD:
-                    return o["price"], None, True, o
+    return None, None
 
-        elif line_type == "spread" and "handicap" in display_name:
-            matching_outcomes = [
-                o
-                for o in market["outcomes"]
-                if _team_similarity(o["name"], team_name) >= TEAM_MATCH_THRESHOLD
-            ]
-            price, actual_line, is_exact, matched_outcome = _find_nearest_line_outcome(
-                matching_outcomes, target_name_filter=None, points=points
-            )
-            if price is not None:
-                return price, actual_line, is_exact, matched_outcome
 
-        elif line_type == "total" and "total" in display_name:
-            price, actual_line, is_exact, matched_outcome = _find_nearest_line_outcome(
-                market["outcomes"], target_name_filter=outcome_side, points=points
-            )
-            if price is not None:
-                return price, actual_line, is_exact, matched_outcome
+def _describe(pinnacle_event: dict) -> str:
+    return (
+        f"{pinnacle_event.get('home')} vs {pinnacle_event.get('away')} "
+        f"[{pinnacle_event.get('leagueName')}] {pinnacle_event.get('lineType')} "
+        f"{pinnacle_event.get('outcome')} {pinnacle_event.get('points')}"
+    )
 
-    return None, None, None, None
+
+def _fmt(val, suffix=""):
+    return "N/A" if val is None else f"{val:.2f}{suffix}"
+
+
+def _log(passed: bool, reason: str, pinnacle_event: dict, ev_percent, nvp):
+    icon = "✅ PASS" if passed else "❌ FAIL"
+    print(
+        f"{icon} [{reason}] {_describe(pinnacle_event)} "
+        f"| EV: {_fmt(ev_percent, '%')} | NVP: {_fmt(nvp)}"
+    )
 
 
 def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
     """
-    Silent evaluator: tracks stats, prints nothing per event.
-    main.py is responsible for periodic summary + bet-result printing.
+    Every single alert gets a printed PASS/FAIL line with the reason,
+    plus EV and NVP wherever they could be computed (N/A otherwise).
+    Only the category EV/NVP table (CATEGORY_THRESHOLDS) decides
+    pass/fail — no drop%/kickoff-window pre-filtering anymore.
     """
     stats.record_fetch()
 
     sport = identify_sport(pinnacle_event)
     if sport is None:
         stats.record_fail("unsupported sport")
-        return None
-
-    try:
-        drop_pct = float(pinnacle_event.get("percentageChange", 0))
-    except (ValueError, TypeError):
-        drop_pct = 0.0
-    if drop_pct < MIN_DROP_PERCENT:
-        stats.record_fail("drop too low")
-        return None
-
-    mins_to_kickoff = minutes_to_kickoff(pinnacle_event)
-    if mins_to_kickoff is None:
-        stats.record_fail("no kickoff time")
-        return None
-    if mins_to_kickoff < MIN_MINUTES_TO_KICKOFF:
-        stats.record_fail("too close to kickoff")
-        return None
-    if mins_to_kickoff > MAX_MINUTES_TO_KICKOFF:
-        stats.record_fail("too far from kickoff")
+        _log(False, "unsupported sport", pinnacle_event, None, None)
         return None
 
     outcome_label = (pinnacle_event.get("outcome") or "").lower()
     nvp, fair_prob = compute_nvp_and_fair_prob(pinnacle_event, outcome_label)
     if nvp is None:
         stats.record_fail("no NVP")
+        _log(False, "could not compute NVP", pinnacle_event, None, None)
         return None
 
-    if nvp > MAX_NVP:
-        stats.record_fail("NVP too high")
+    line_type = pinnacle_event.get("lineType")
+
+    thresholds = _get_category_thresholds(
+        sport, line_type, outcome_label, pinnacle_event.get("points")
+    )
+    if thresholds is None:
+        stats.record_fail("category excluded or unsupported")
+        _log(
+            False,
+            "category excluded (unders / pending / unsupported)",
+            pinnacle_event,
+            None,
+            nvp,
+        )
+        return None
+    min_ev_percent, max_nvp = thresholds
+
+    if nvp > max_nvp:
+        stats.record_fail("NVP too high for category")
+        _log(False, f"NVP {nvp:.3f} > max {max_nvp}", pinnacle_event, None, nvp)
         return None
 
     betway_row = find_matching_betway_event(pinnacle_event, betway_rows)
     if betway_row is None:
         stats.record_fail("no matching Betway event found")
+        _log(False, "no matching Betway event found", pinnacle_event, None, nvp)
         return None
 
-    betway_price, matched_line, is_exact, matched_outcome = find_betway_price(
-        betway_row, pinnacle_event, sport
-    )
-    if betway_price is None:
-        stats.record_fail("market/outcome not found on Betway")
+    if line_type == "money_line":
+        betway_price, matched_outcome = find_betway_price_moneyline(
+            betway_row, pinnacle_event, sport
+        )
+        if betway_price is None:
+            stats.record_fail("market/outcome not found on Betway")
+            _log(False, "market/outcome not found on Betway", pinnacle_event, None, nvp)
+            return None
+
+        matched_line = None
+        is_exact = True
+        placement_fields = {
+            "betway_market_id": matched_outcome.get("marketId"),
+            "outcomeId": matched_outcome.get("outcomeId"),
+            "eventVersion": matched_outcome.get("eventVersion"),
+            "marketVersion": matched_outcome.get("marketVersion"),
+            "outcomeVersion": matched_outcome.get("outcomeVersion"),
+            "priceVersion": matched_outcome.get("priceVersion"),
+            "serverEmopSource": matched_outcome.get("serverEmopSource"),
+            "publicHubPublishedTime": matched_outcome.get("publicHubPublishedTime"),
+            "priceNum": matched_outcome.get("priceNum"),
+            "priceDen": matched_outcome.get("priceDen"),
+            "betway_handicap_scaled": 0,
+        }
+
+    elif line_type in ("spread", "total"):
+        try:
+            target_line = float(pinnacle_event.get("points") or 0)
+        except (ValueError, TypeError):
+            target_line = 0.0
+
+        team_name = (
+            pinnacle_event["home"]
+            if outcome_label == "home"
+            else pinnacle_event["away"]
+        )
+
+        live = resolve_live_bet_target(
+            event_id=betway_row.get("eventId"),
+            line_type=line_type,
+            target_line=target_line,
+            outcome_side=outcome_label,
+            team_name=team_name,
+        )
+        if live is None:
+            stats.record_fail("market/outcome not found on Betway (live)")
+            _log(False, "no live line match on Betway", pinnacle_event, None, nvp)
+            return None
+
+        betway_price = live["priceDec"]
+        matched_line = live.get("rawHandicap")
+        is_exact = matched_line is not None and abs(matched_line - target_line) <= 0.01
+        placement_fields = {
+            "betway_market_id": live.get("marketId"),
+            "outcomeId": live.get("outcomeId"),
+            "eventVersion": live.get("eventVersion"),
+            "marketVersion": live.get("marketVersion"),
+            "outcomeVersion": live.get("outcomeVersion"),
+            "priceVersion": live.get("priceVersion"),
+            "serverEmopSource": live.get("serverEmopSource"),
+            "publicHubPublishedTime": live.get("publicHubPublishedTime"),
+            "priceNum": live.get("priceNum"),
+            "priceDen": live.get("priceDen"),
+            "betway_handicap_scaled": live.get("handicap"),
+        }
+
+    else:
+        stats.record_fail("unsupported line type")
+        _log(False, "unsupported line type", pinnacle_event, None, nvp)
         return None
 
     ev_percent = (betway_price * fair_prob - 1.0) * 100.0
-    if ev_percent < MIN_EV_PERCENT:
-        stats.record_fail("EV too low")
+
+    if ev_percent < min_ev_percent:
+        stats.record_fail("EV too low for category")
+        _log(
+            False,
+            f"EV {ev_percent:.2f}% < min {min_ev_percent}%",
+            pinnacle_event,
+            ev_percent,
+            nvp,
+        )
         return None
 
     result = {
@@ -330,43 +412,20 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
         "away": pinnacle_event.get("away"),
         "league": pinnacle_event.get("leagueName"),
         "sport": sport,
-        "line_type": pinnacle_event.get("lineType"),
+        "line_type": line_type,
         "outcome": outcome_label,
         "points": pinnacle_event.get("points"),
-        "drop_percent": round(drop_pct, 2),
-        "minutes_to_kickoff": round(mins_to_kickoff, 1),
+        "minutes_to_kickoff": round(minutes_to_kickoff(pinnacle_event) or 0, 1),
         "nvp": round(nvp, 3),
         "betway_price": betway_price,
         "betway_matched_line": matched_line,
         "line_matched_exactly": is_exact,
         "ev_percent": round(ev_percent, 2),
         "is_alt_stat_market": is_alt_stat_market(pinnacle_event),
-        "outcomeId": matched_outcome.get("outcomeId") if matched_outcome else None,
-        "betway_market_id": matched_outcome.get("marketId")
-        if matched_outcome
-        else None,
-        "eventVersion": matched_outcome.get("eventVersion")
-        if matched_outcome
-        else None,
-        "marketVersion": matched_outcome.get("marketVersion")
-        if matched_outcome
-        else None,
-        "outcomeVersion": matched_outcome.get("outcomeVersion")
-        if matched_outcome
-        else None,
-        "priceVersion": matched_outcome.get("priceVersion")
-        if matched_outcome
-        else None,
-        "serverEmopSource": matched_outcome.get("serverEmopSource")
-        if matched_outcome
-        else None,
-        "publicHubPublishedTime": matched_outcome.get("publicHubPublishedTime")
-        if matched_outcome
-        else None,
-        "priceNum": matched_outcome.get("priceNum") if matched_outcome else None,
-        "priceDen": matched_outcome.get("priceDen") if matched_outcome else None,
-        "betway_line": matched_outcome.get("line") if matched_outcome else None,
+        "betway_line": matched_line,
+        **placement_fields,
     }
 
     stats.record_pass()
+    _log(True, "passed category thresholds", pinnacle_event, ev_percent, nvp)
     return result
