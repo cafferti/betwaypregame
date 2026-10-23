@@ -1,0 +1,14 @@
+{
+  "run": false,
+  "markets": {
+    "bb_moneyline": true,
+    "bb_spread": true,
+    "bb_over": true,
+    "bb_under": true,
+    "fb_moneyline": true,
+    "fb_spread": true,
+    "fb_over": true,
+    "fb_under": true
+  },
+  "token": "5226aec6f282313c108fbc3e28543310"
+}

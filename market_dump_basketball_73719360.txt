@@ -1,0 +1,586 @@
+EVENT 73719360: None vs None  (sport basketball)
+event fields: []
+
+=== ALL 122 MARKET NAMES (name | displayName | id) ===
+  [Basketball Win/Draw/Win] | 1X2 (Excl. Overtime) | 737193601
+  Winner (Incl. Overtime) | Winner (Incl. OT) | 73719360219
+  [1st Half] - [Win/Draw/Win] | 1st Half - 1X2 | 7371936060
+  Draw No Bet | Draw No Bet | 7371936011
+  Total | Total | 7371936018
+  Total | Total (240.5) | 7371936018total=240.5~
+  Will There Be Overtime | Will There Be Overtime? | 73719360220
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=2.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=3.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=4.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=5.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=6.5~
+  Halftime/Fulltime | Halftime/Fulltime | 7371936047
+  1st Half - Draw No Bet | 1st Half - Draw No Bet | 7371936064
+  1st Half - Handicap | 1st Half - Handicap | 7371936066
+  1st Half - Handicap | 1st Half - Handicap (0.5) | 7371936066hcp=-0.5~
+  1st Half - Handicap | 1st Half - Handicap (1.5) | 7371936066hcp=-1.5~
+  1st Half - Handicap | 1st Half - Handicap (2.5) | 7371936066hcp=-2.5~
+  1st Half - Handicap | 1st Half - Handicap (0.5) | 7371936066hcp=0.5~
+  1st Half - Handicap | 1st Half - Handicap (1.5) | 7371936066hcp=1.5~
+  1st Half - Total | 1st Half - Total | 7371936068
+  1st Half - Total | 1st Half - Total (113.5) | 7371936068total=113.5~
+  1st Half - Total | 1st Half - Total (114.5) | 7371936068total=114.5~
+  1st Half - Total | 1st Half - Total (115.5) | 7371936068total=115.5~
+  1st Half - Total | 1st Half - Total (116.5) | 7371936068total=116.5~
+  1st Half - Total | 1st Half - Total (117.5) | 7371936068total=117.5~
+  1st Half - Milwaukee Bucks Total | 1st Half - Milwaukee Bucks Total (57.5) | 7371936069total=57.5~
+  1st Half - Milwaukee Bucks Total | 1st Half - Milwaukee Bucks Total (58.5) | 7371936069total=58.5~
+  1st Half - Milwaukee Bucks Total | 1st Half - Milwaukee Bucks Total (59.5) | 7371936069total=59.5~
+  1st Half - Chicago Bulls Total | 1st Half - Chicago Bulls Total (56.5) | 7371936070total=56.5~
+  1st Half - Chicago Bulls Total | 1st Half - Chicago Bulls Total (57.5) | 7371936070total=57.5~
+  1st Half - Chicago Bulls Total | 1st Half - Chicago Bulls Total (58.5) | 7371936070total=58.5~
+  1st Half - Odd/Even | 1st Half - Odd/Even | 7371936074
+  [2nd Half] - [Win/Draw/Win] | 2nd Half - 1X2 | 7371936083
+  2nd Half - Draw No Bet | 2nd Half - Draw No Bet | 7371936086
+  2nd Half - Handicap | 2nd Half - Handicap | 7371936088
+  2nd Half - Handicap | 2nd Half - Handicap (0.5) | 7371936088hcp=-0.5~
+  2nd Half - Total | 2nd Half - Total | 7371936090
+  2nd Half - Total | 2nd Half - Total (123.5) | 7371936090total=123.5~
+  2nd Half - Odd/Even | 2nd Half - Odd/Even | 7371936094
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=-1.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=-2.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=-3.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=-4.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=-5.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=-6.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=-7.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=-8.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=-9.5~
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73719360223hcp=1.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=233.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=234.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=235.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=236.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=237.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=238.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=239.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=240.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=241.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=242.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=243.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=244.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=245.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=246.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73719360225total=247.5~
+  [Home Team] Total (incl. overtime) | Milwaukee Bucks Total (incl. overtime) | 73719360227
+  Milwaukee Bucks Total (Incl. Overtime) | Milwaukee Bucks Total (Incl. Overtime) | 73719360227total=118.5~
+  Milwaukee Bucks Total (Incl. Overtime) | Milwaukee Bucks Total (Incl. Overtime) | 73719360227total=119.5~
+  Milwaukee Bucks Total (Incl. Overtime) | Milwaukee Bucks Total (Incl. Overtime) | 73719360227total=120.5~
+  Milwaukee Bucks Total (Incl. Overtime) | Milwaukee Bucks Total (Incl. Overtime) | 73719360227total=121.5~
+  Milwaukee Bucks Total (Incl. Overtime) | Milwaukee Bucks Total (Incl. Overtime) | 73719360227total=122.5~
+  [Away Team] Total (incl. overtime) | Chicago Bulls Total (incl. overtime) | 73719360228
+  Chicago Bulls Total (Incl. Overtime) | Chicago Bulls Total (Incl. Overtime) | 73719360228total=117.5~
+  Chicago Bulls Total (Incl. Overtime) | Chicago Bulls Total (Incl. Overtime) | 73719360228total=118.5~
+  Chicago Bulls Total (Incl. Overtime) | Chicago Bulls Total (Incl. Overtime) | 73719360228total=119.5~
+  Chicago Bulls Total (Incl. Overtime) | Chicago Bulls Total (Incl. Overtime) | 73719360228total=120.5~
+  Chicago Bulls Total (Incl. Overtime) | Chicago Bulls Total (Incl. Overtime) | 73719360228total=121.5~
+  Odd/Even (Incl. Overtime) | Odd/Even (Incl. Overtime) | 73719360229
+  Highest Scoring Quarter | Period With Highest Score | 73719360234
+  1st Quarter - 1X2 | 1st Quarter - 1X2 | 73719360235quarternr=1~
+  2nd Quarter - 1X2 | 2nd Quarter - 1X2 | 73719360235quarternr=2~
+  3rd Quarter - 1X2 | 3rd Quarter - 1X2 | 73719360235quarternr=3~
+  4th Quarter - 1X2 | 4th Quarter - 1X2 | 73719360235quarternr=4~
+  1st Quarter - Total | 1st Quarter - Total (57.5) | 73719360236quarternr=1~total=57.5~
+  1st Quarter - Total | 1st Quarter - Total (58.5) | 73719360236quarternr=1~total=58.5~
+  1st Quarter - Total | 1st Quarter - Total (59.5) | 73719360236quarternr=1~total=59.5~
+  2nd Quarter - Total | 2nd Quarter - Total (57.5) | 73719360236quarternr=2~total=57.5~
+  3rd Quarter - Total | 3rd Quarter - Total (63.5) | 73719360236quarternr=3~total=63.5~
+  4th Quarter - Total | 4th Quarter - Total (60.5) | 73719360236quarternr=4~total=60.5~
+  Winning Margin (Incl. Overtime) | Winning Margin (Incl. Overtime) | 73719360290variant=sr:winning_margin_no_draw:11+~
+  Winning Margin (Incl. Overtime) | Winning Margin (Incl. Overtime) | 73719360290variant=sr:winning_margin_no_draw:26+~
+  Winning Margin (Incl. Overtime) | Winning Margin (Incl. Overtime) | 73719360290variant=sr:winning_margin:6+~
+  Winner & Total (Incl. Overtime) | Winner & Total (Incl. Overtime) | 73719360292total=240.5~
+  Total (Over-Exact-Under) | Total (Over-Exact-Under) | 73719360297total=239~
+  3rd Quarter - Winning Margin | 3rd Quarter Winning Margin | 73719360301
+  1st Quarter - Winning Margin | 1st Quarter Winning Margin | 73719360301quarternr=1~
+  2nd Quarter - Winning Margin | 2nd Quarter Winning Margin | 73719360301quarternr=2~
+  3rd Quarter - Winning Margin | 3rd Quarter Winning Margin | 73719360301quarternr=3~
+  4th Quarter - Winning Margin | 4th Quarter Winning Margin | 73719360301quarternr=4~
+  1st Quarter - Draw No Bet | 1st Quarter - Draw No Bet | 73719360302quarternr=1~
+  2nd Quarter - Draw No Bet | 2nd Quarter - Draw No Bet | 73719360302quarternr=2~
+  3rd Quarter - Draw No Bet | 3rd Quarter - Draw No Bet | 73719360302quarternr=3~
+  4th Quarter - Draw No Bet | 4th Quarter - Draw No Bet | 73719360302quarternr=4~
+  1st Quarter - Handicap | 1st Quarter Handicap (0.5) | 73719360303quarternr=1~hcp=-0.5~
+  1st Quarter - Handicap | 1st Quarter Handicap (1.5) | 73719360303quarternr=1~hcp=-1.5~
+  1st Quarter - Handicap | 1st Quarter Handicap (0.5) | 73719360303quarternr=1~hcp=0.5~
+  2nd Quarter - Handicap | 2nd Period - Handicap (0.5) | 73719360303quarternr=2~hcp=-0.5~
+  3rd Quarter - Handicap | 3rd Period - Handicap (0.5) | 73719360303quarternr=3~hcp=-0.5~
+  4th Quarter - Handicap | 4th Period - Handicap (0.5) | 73719360303quarternr=4~hcp=-0.5~
+  1st Quarter - Odd/Even | 1st Quarter Odd/Even | 73719360304quarternr=1~
+  2nd Quarter - Odd/Even | 2nd Quarter Odd/Even | 73719360304quarternr=2~
+  3rd Quarter - Odd/Even | 3rd Quarter Odd/Even | 73719360304quarternr=3~
+  4th Quarter - Odd/Even | 4th Quarter Odd/Even | 73719360304quarternr=4~
+  1st Quarter - Milwaukee Bucks Total | 1st Quarter - Milwaukee Bucks Total (28.5) | 73719360756quarternr=1~total=28.5~
+  1st Quarter - Milwaukee Bucks Total | 1st Quarter - Milwaukee Bucks Total (29.5) | 73719360756quarternr=1~total=29.5~
+  1st Quarter - Milwaukee Bucks Total | 1st Quarter - Milwaukee Bucks Total (30.5) | 73719360756quarternr=1~total=30.5~
+  1st Quarter - Chicago Bulls Total | 1st Quarter - Chicago Bulls Total (29.5) | 73719360757quarternr=1~total=29.5~
+  1st Quarter - Chicago Bulls Total | 1st Quarter - Chicago Bulls Total (30.5) | 73719360757quarternr=1~total=30.5~
+  1st Quarter - Chicago Bulls Total | 1st Quarter - Chicago Bulls Total (28.5) | 73719360757quarternr=1~total=28.5~
+  Any Team Winning Margin (Incl. Overtime) | Any Team Winning Margin (Incl. Overtime) | 73719360849variant=sr:winning_margin_no_draw_any_team:31+~
+
+=== DETAIL (selections listed under the market they BELONG to) ===
+
+MARKET id=737193601  [Basketball Win/Draw/Win] | 1X2 (Excl. Overtime)  handicap=0  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=0       sbv=''           price=1.87
+   'Draw'                             handicap=0       sbv=''           price=15
+   'Chicago Bulls'                    handicap=0       sbv=''           price=2.05
+   (+6 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360219  Winner (Incl. Overtime) | Winner (Incl. OT)  handicap=0  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=0       sbv=''           price=1.79
+   'Chicago Bulls'                    handicap=0       sbv=''           price=1.96
+
+MARKET id=7371936060  [1st Half] - [Win/Draw/Win] | 1st Half - 1X2  handicap=0  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=0       sbv=''           price=1.83
+   'Draw'                             handicap=0       sbv=''           price=23
+   'Chicago Bulls'                    handicap=0       sbv=''           price=1.96
+
+MARKET id=7371936018  Total | Total  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=235.5   sbv=' (235.5)'   price=1.69
+   'Under '                           handicap=235.5   sbv=' (235.5)'   price=2.08
+   'Over '                            handicap=240.5   sbv=' (240.5)'   price=1.97
+   'Under '                           handicap=240.5   sbv=' (240.5)'   price=1.78
+
+MARKET id=7371936018total=240.5~  Total | Total (240.5)  handicap=240.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=2.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=2.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=3.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=3.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=4.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=4.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=5.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=5.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=6.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=6.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936066  1st Half - Handicap | 1st Half - Handicap  handicap=0  parent=True suspended=False active=True
+   'Milwaukee Bucks'                  handicap=0.5     sbv=' (+0.5)'    price=1.74
+   'Chicago Bulls'                    handicap=0.5     sbv=' (-0.5)'    price=1.98
+   'Milwaukee Bucks'                  handicap=-0.5    sbv=' (-0.5)'    price=1.85
+   'Chicago Bulls'                    handicap=-0.5    sbv=' (+0.5)'    price=1.85
+   'Milwaukee Bucks'                  handicap=1.5     sbv=' (+1.5)'    price=1.63
+   'Chicago Bulls'                    handicap=1.5     sbv=' (-1.5)'    price=2.14
+   'Milwaukee Bucks'                  handicap=-1.5    sbv=' (-1.5)'    price=1.99
+   'Chicago Bulls'                    handicap=-1.5    sbv=' (+1.5)'    price=1.73
+   'Milwaukee Bucks'                  handicap=-2.5    sbv=' (-2.5)'    price=2.14
+   'Chicago Bulls'                    handicap=-2.5    sbv=' (+2.5)'    price=1.63
+   'Milwaukee Bucks'                  handicap=2.5     sbv=' (+2.5)'    price=1.59
+   'Chicago Bulls'                    handicap=2.5     sbv=' (-2.5)'    price=2.21
+
+MARKET id=7371936066hcp=-0.5~  1st Half - Handicap | 1st Half - Handicap (0.5)  handicap=-0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936066hcp=-1.5~  1st Half - Handicap | 1st Half - Handicap (1.5)  handicap=-1.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936066hcp=-2.5~  1st Half - Handicap | 1st Half - Handicap (2.5)  handicap=-2.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936066hcp=0.5~  1st Half - Handicap | 1st Half - Handicap (0.5)  handicap=0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936066hcp=1.5~  1st Half - Handicap | 1st Half - Handicap (1.5)  handicap=1.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936068  1st Half - Total | 1st Half - Total  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=113.5   sbv=' (113.5)'   price=1.61
+   'Under '                           handicap=113.5   sbv=' (113.5)'   price=2.18
+   'Over '                            handicap=114.5   sbv=' (114.5)'   price=1.7
+   'Under '                           handicap=114.5   sbv=' (114.5)'   price=2.03
+   'Over '                            handicap=115.5   sbv=' (115.5)'   price=1.81
+   'Under '                           handicap=115.5   sbv=' (115.5)'   price=1.9
+   'Over '                            handicap=116.5   sbv=' (116.5)'   price=1.92
+   'Under '                           handicap=116.5   sbv=' (116.5)'   price=1.79
+   'Over '                            handicap=117.5   sbv=' (117.5)'   price=2.05
+   'Under '                           handicap=117.5   sbv=' (117.5)'   price=1.69
+
+MARKET id=7371936068total=113.5~  1st Half - Total | 1st Half - Total (113.5)  handicap=113.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936068total=114.5~  1st Half - Total | 1st Half - Total (114.5)  handicap=114.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936068total=115.5~  1st Half - Total | 1st Half - Total (115.5)  handicap=115.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936068total=116.5~  1st Half - Total | 1st Half - Total (116.5)  handicap=116.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936068total=117.5~  1st Half - Total | 1st Half - Total (117.5)  handicap=117.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936069total=57.5~  1st Half - Milwaukee Bucks Total | 1st Half - Milwaukee Bucks Total (57.5)  handicap=57.5  parent=False suspended=False active=True
+   'Over '                            handicap=57.5    sbv=' (57.5)'    price=1.74
+   'Under '                           handicap=57.5    sbv=' (57.5)'    price=1.97
+
+MARKET id=7371936069total=58.5~  1st Half - Milwaukee Bucks Total | 1st Half - Milwaukee Bucks Total (58.5)  handicap=58.5  parent=False suspended=False active=True
+   'Over '                            handicap=58.5    sbv=' (58.5)'    price=1.92
+   'Under '                           handicap=58.5    sbv=' (58.5)'    price=1.79
+
+MARKET id=7371936069total=59.5~  1st Half - Milwaukee Bucks Total | 1st Half - Milwaukee Bucks Total (59.5)  handicap=59.5  parent=False suspended=False active=True
+   'Over '                            handicap=59.5    sbv=' (59.5)'    price=2.13
+   'Under '                           handicap=59.5    sbv=' (59.5)'    price=1.64
+
+MARKET id=7371936070total=56.5~  1st Half - Chicago Bulls Total | 1st Half - Chicago Bulls Total (56.5)  handicap=56.5  parent=False suspended=False active=True
+   'Over '                            handicap=56.5    sbv=' (56.5)'    price=1.67
+   'Under '                           handicap=56.5    sbv=' (56.5)'    price=2.09
+
+MARKET id=7371936070total=57.5~  1st Half - Chicago Bulls Total | 1st Half - Chicago Bulls Total (57.5)  handicap=57.5  parent=False suspended=False active=True
+   'Over '                            handicap=57.5    sbv=' (57.5)'    price=1.82
+   'Under '                           handicap=57.5    sbv=' (57.5)'    price=1.88
+
+MARKET id=7371936070total=58.5~  1st Half - Chicago Bulls Total | 1st Half - Chicago Bulls Total (58.5)  handicap=58.5  parent=False suspended=False active=True
+   'Over '                            handicap=58.5    sbv=' (58.5)'    price=2.01
+   'Under '                           handicap=58.5    sbv=' (58.5)'    price=1.71
+
+MARKET id=7371936083  [2nd Half] - [Win/Draw/Win] | 2nd Half - 1X2  handicap=0  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=0       sbv=''           price=1.85
+   'Draw'                             handicap=0       sbv=''           price=22
+   'Chicago Bulls'                    handicap=0       sbv=''           price=1.95
+
+MARKET id=7371936088  2nd Half - Handicap | 2nd Half - Handicap  handicap=0  parent=True suspended=False active=True
+   'Milwaukee Bucks'                  handicap=0.5     sbv=' (+0.5)'    price=1.82
+   'Milwaukee Bucks'                  handicap=-0.5    sbv=' (-0.5)'    price=1.87
+   'Chicago Bulls'                    handicap=0.5     sbv=' (-0.5)'    price=1.89
+   'Chicago Bulls'                    handicap=-0.5    sbv=' (+0.5)'    price=1.84
+
+MARKET id=7371936088hcp=-0.5~  2nd Half - Handicap | 2nd Half - Handicap (0.5)  handicap=-0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7371936090  2nd Half - Total | 2nd Half - Total  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=121.5   sbv=' (121.5)'   price=1.81
+   'Under '                           handicap=121.5   sbv=' (121.5)'   price=1.89
+   'Over '                            handicap=122.5   sbv=' (122.5)'   price=1.82
+   'Under '                           handicap=122.5   sbv=' (122.5)'   price=1.88
+   'Over '                            handicap=123.5   sbv=' (123.5)'   price=1.89
+   'Under '                           handicap=123.5   sbv=' (123.5)'   price=1.81
+
+MARKET id=7371936090total=123.5~  2nd Half - Total | 2nd Half - Total (123.5)  handicap=123.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=0  parent=True suspended=False active=True
+   'Milwaukee Bucks'                  handicap=1.5     sbv=' (+1.5)'    price=1.69
+   'Chicago Bulls'                    handicap=1.5     sbv=' (-1.5)'    price=2.05
+   'Milwaukee Bucks'                  handicap=-1.5    sbv=' (-1.5)'    price=1.86
+   'Chicago Bulls'                    handicap=-1.5    sbv=' (+1.5)'    price=1.84
+   'Milwaukee Bucks'                  handicap=-2.5    sbv=' (-2.5)'    price=1.98
+   'Chicago Bulls'                    handicap=-2.5    sbv=' (+2.5)'    price=1.74
+   'Milwaukee Bucks'                  handicap=2.5     sbv=' (+2.5)'    price=1.61
+   'Chicago Bulls'                    handicap=2.5     sbv=' (-2.5)'    price=2.18
+   'Milwaukee Bucks'                  handicap=-3.5    sbv=' (-3.5)'    price=2.11
+   'Chicago Bulls'                    handicap=-3.5    sbv=' (+3.5)'    price=1.65
+   'Milwaukee Bucks'                  handicap=3.5     sbv=' (+3.5)'    price=1.53
+   'Chicago Bulls'                    handicap=3.5     sbv=' (-3.5)'    price=2.34
+   'Milwaukee Bucks'                  handicap=-4.5    sbv=' (-4.5)'    price=2.25
+   'Chicago Bulls'                    handicap=-4.5    sbv=' (+4.5)'    price=1.57
+   'Milwaukee Bucks'                  handicap=4.5     sbv=' (+4.5)'    price=1.47
+   'Chicago Bulls'                    handicap=4.5     sbv=' (-4.5)'    price=2.5
+   'Milwaukee Bucks'                  handicap=-5.5    sbv=' (-5.5)'    price=2.39
+   'Chicago Bulls'                    handicap=-5.5    sbv=' (+5.5)'    price=1.51
+   'Milwaukee Bucks'                  handicap=5.5     sbv=' (+5.5)'    price=1.41
+   'Chicago Bulls'                    handicap=5.5     sbv=' (-5.5)'    price=2.7
+   'Milwaukee Bucks'                  handicap=-6.5    sbv=' (-6.5)'    price=2.6
+   'Chicago Bulls'                    handicap=-6.5    sbv=' (+6.5)'    price=1.44
+   'Milwaukee Bucks'                  handicap=6.5     sbv=' (+6.5)'    price=1.36
+   'Chicago Bulls'                    handicap=6.5     sbv=' (-6.5)'    price=2.9
+   'Milwaukee Bucks'                  handicap=-7.5    sbv=' (-7.5)'    price=2.8
+   'Chicago Bulls'                    handicap=-7.5    sbv=' (+7.5)'    price=1.38
+   'Milwaukee Bucks'                  handicap=7.5     sbv=' (+7.5)'    price=1.36
+   'Chicago Bulls'                    handicap=7.5     sbv=' (-7.5)'    price=2.9
+   'Milwaukee Bucks'                  handicap=-8.5    sbv=' (-8.5)'    price=3
+   'Chicago Bulls'                    handicap=-8.5    sbv=' (+8.5)'    price=1.34
+   'Milwaukee Bucks'                  handicap=8.5     sbv=' (+8.5)'    price=1.32
+   'Chicago Bulls'                    handicap=8.5     sbv=' (-8.5)'    price=3.1
+   'Milwaukee Bucks'                  handicap=-9.5    sbv=' (-9.5)'    price=3.25
+   'Chicago Bulls'                    handicap=-9.5    sbv=' (+9.5)'    price=1.29
+   'Milwaukee Bucks'                  handicap=9.5     sbv=' (+9.5)'    price=1.28
+   'Chicago Bulls'                    handicap=9.5     sbv=' (-9.5)'    price=3.4
+
+MARKET id=73719360223hcp=-1.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=-1.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=-2.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=-2.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=-3.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=-3.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=-4.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=-4.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=-5.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=-5.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=-6.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=-6.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=-7.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=-7.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=-8.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=-8.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=-9.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=-9.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360223hcp=1.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=1.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=230.5   sbv=' (230.5)'   price=1.42
+   'Under '                           handicap=230.5   sbv=' (230.5)'   price=2.65
+   'Over '                            handicap=231.5   sbv=' (231.5)'   price=1.42
+   'Under '                           handicap=231.5   sbv=' (231.5)'   price=2.65
+   'Over '                            handicap=232.5   sbv=' (232.5)'   price=1.42
+   'Under '                           handicap=232.5   sbv=' (232.5)'   price=2.7
+   'Over '                            handicap=233.5   sbv=' (233.5)'   price=1.44
+   'Under '                           handicap=233.5   sbv=' (233.5)'   price=2.6
+   'Over '                            handicap=234.5   sbv=' (234.5)'   price=1.49
+   'Under '                           handicap=234.5   sbv=' (234.5)'   price=2.45
+   'Over '                            handicap=235.5   sbv=' (235.5)'   price=1.54
+   'Under '                           handicap=235.5   sbv=' (235.5)'   price=2.32
+   'Over '                            handicap=236.5   sbv=' (236.5)'   price=1.59
+   'Under '                           handicap=236.5   sbv=' (236.5)'   price=2.21
+   'Over '                            handicap=237.5   sbv=' (237.5)'   price=1.65
+   'Under '                           handicap=237.5   sbv=' (237.5)'   price=2.11
+   'Over '                            handicap=238.5   sbv=' (238.5)'   price=1.72
+   'Under '                           handicap=238.5   sbv=' (238.5)'   price=2.01
+   'Over '                            handicap=239.5   sbv=' (239.5)'   price=1.79
+   'Under '                           handicap=239.5   sbv=' (239.5)'   price=1.92
+   'Over '                            handicap=240.5   sbv=' (240.5)'   price=1.86
+   'Under '                           handicap=240.5   sbv=' (240.5)'   price=1.84
+   'Over '                            handicap=241.5   sbv=' (241.5)'   price=1.94
+   'Under '                           handicap=241.5   sbv=' (241.5)'   price=1.77
+   'Over '                            handicap=242.5   sbv=' (242.5)'   price=2.03
+   'Under '                           handicap=242.5   sbv=' (242.5)'   price=1.7
+   'Over '                            handicap=243.5   sbv=' (243.5)'   price=2.13
+   'Under '                           handicap=243.5   sbv=' (243.5)'   price=1.64
+   'Over '                            handicap=244.5   sbv=' (244.5)'   price=2.23
+   'Under '                           handicap=244.5   sbv=' (244.5)'   price=1.58
+   'Over '                            handicap=245.5   sbv=' (245.5)'   price=2.34
+   'Under '                           handicap=245.5   sbv=' (245.5)'   price=1.53
+   'Over '                            handicap=246.5   sbv=' (246.5)'   price=2.46
+   'Under '                           handicap=246.5   sbv=' (246.5)'   price=1.48
+   'Over '                            handicap=247.5   sbv=' (247.5)'   price=2.6
+   'Under '                           handicap=247.5   sbv=' (247.5)'   price=1.44
+
+MARKET id=73719360225total=233.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=233.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=234.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=234.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=235.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=235.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=236.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=236.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=237.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=237.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=238.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=238.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=239.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=239.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=240.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=240.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=241.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=241.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=242.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=242.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=243.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=243.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=244.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=244.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=245.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=245.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=246.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=246.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360225total=247.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=247.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360227  [Home Team] Total (incl. overtime) | Milwaukee Bucks Total (incl. overtime)  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=116.5   sbv=' (116.5)'   price=1.62
+   'Under '                           handicap=116.5   sbv=' (116.5)'   price=2.22
+   'Over '                            handicap=117.5   sbv=' (117.5)'   price=1.62
+   'Under '                           handicap=117.5   sbv=' (117.5)'   price=2.22
+   'Over '                            handicap=118.5   sbv=' (118.5)'   price=1.64
+   'Under '                           handicap=118.5   sbv=' (118.5)'   price=2.17
+   'Over '                            handicap=119.5   sbv=' (119.5)'   price=1.74
+   'Under '                           handicap=119.5   sbv=' (119.5)'   price=2.02
+   'Over '                            handicap=120.5   sbv=' (120.5)'   price=1.85
+   'Under '                           handicap=120.5   sbv=' (120.5)'   price=1.89
+   'Over '                            handicap=121.5   sbv=' (121.5)'   price=1.98
+   'Under '                           handicap=121.5   sbv=' (121.5)'   price=1.77
+   'Over '                            handicap=122.5   sbv=' (122.5)'   price=2.13
+   'Under '                           handicap=122.5   sbv=' (122.5)'   price=1.67
+
+MARKET id=73719360227total=118.5~  Milwaukee Bucks Total (Incl. Overtime) | Milwaukee Bucks Total (Incl. Overtime)  handicap=118.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360227total=119.5~  Milwaukee Bucks Total (Incl. Overtime) | Milwaukee Bucks Total (Incl. Overtime)  handicap=119.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360227total=120.5~  Milwaukee Bucks Total (Incl. Overtime) | Milwaukee Bucks Total (Incl. Overtime)  handicap=120.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360227total=121.5~  Milwaukee Bucks Total (Incl. Overtime) | Milwaukee Bucks Total (Incl. Overtime)  handicap=121.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360227total=122.5~  Milwaukee Bucks Total (Incl. Overtime) | Milwaukee Bucks Total (Incl. Overtime)  handicap=122.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360228  [Away Team] Total (incl. overtime) | Chicago Bulls Total (incl. overtime)  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=116.5   sbv=' (116.5)'   price=1.61
+   'Under '                           handicap=116.5   sbv=' (116.5)'   price=2.24
+   'Over '                            handicap=117.5   sbv=' (117.5)'   price=1.63
+   'Under '                           handicap=117.5   sbv=' (117.5)'   price=2.2
+   'Over '                            handicap=118.5   sbv=' (118.5)'   price=1.72
+   'Under '                           handicap=118.5   sbv=' (118.5)'   price=2.04
+   'Over '                            handicap=119.5   sbv=' (119.5)'   price=1.84
+   'Under '                           handicap=119.5   sbv=' (119.5)'   price=1.9
+   'Over '                            handicap=120.5   sbv=' (120.5)'   price=1.96
+   'Under '                           handicap=120.5   sbv=' (120.5)'   price=1.78
+   'Over '                            handicap=121.5   sbv=' (121.5)'   price=2.11
+   'Under '                           handicap=121.5   sbv=' (121.5)'   price=1.68
+
+MARKET id=73719360228total=117.5~  Chicago Bulls Total (Incl. Overtime) | Chicago Bulls Total (Incl. Overtime)  handicap=117.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360228total=118.5~  Chicago Bulls Total (Incl. Overtime) | Chicago Bulls Total (Incl. Overtime)  handicap=118.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360228total=119.5~  Chicago Bulls Total (Incl. Overtime) | Chicago Bulls Total (Incl. Overtime)  handicap=119.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360228total=120.5~  Chicago Bulls Total (Incl. Overtime) | Chicago Bulls Total (Incl. Overtime)  handicap=120.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360228total=121.5~  Chicago Bulls Total (Incl. Overtime) | Chicago Bulls Total (Incl. Overtime)  handicap=121.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73719360235quarternr=1~  1st Quarter - 1X2 | 1st Quarter - 1X2  handicap=0  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=0       sbv=''           price=1.87
+   'Draw'                             handicap=0       sbv=''           price=17
+   'Chicago Bulls'                    handicap=0       sbv=''           price=1.97
+
+MARKET id=73719360235quarternr=2~  2nd Quarter - 1X2 | 2nd Quarter - 1X2  handicap=0  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=0       sbv=''           price=1.88
+   'Draw'                             handicap=0       sbv=''           price=17
+   'Chicago Bulls'                    handicap=0       sbv=''           price=1.96
+
+MARKET id=73719360235quarternr=3~  3rd Quarter - 1X2 | 3rd Quarter - 1X2  handicap=0  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=0       sbv=''           price=1.87
+   'Draw'                             handicap=0       sbv=''           price=17
+   'Chicago Bulls'                    handicap=0       sbv=''           price=1.97
+
+MARKET id=73719360235quarternr=4~  4th Quarter - 1X2 | 4th Quarter - 1X2  handicap=0  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=0       sbv=''           price=1.9
+   'Draw'                             handicap=0       sbv=''           price=17
+   'Chicago Bulls'                    handicap=0       sbv=''           price=1.95
+
+MARKET id=73719360236quarternr=1~total=57.5~  1st Quarter - Total | 1st Quarter - Total (57.5)  handicap=57.5  parent=False suspended=False active=True
+   'Over '                            handicap=57.5    sbv=' (57.5)'    price=1.7
+   'Under '                           handicap=57.5    sbv=' (57.5)'    price=2.03
+
+MARKET id=73719360236quarternr=1~total=58.5~  1st Quarter - Total | 1st Quarter - Total (58.5)  handicap=58.5  parent=False suspended=False active=True
+   'Over '                            handicap=58.5    sbv=' (58.5)'    price=1.85
+   'Under '                           handicap=58.5    sbv=' (58.5)'    price=1.85
+
+MARKET id=73719360236quarternr=1~total=59.5~  1st Quarter - Total | 1st Quarter - Total (59.5)  handicap=59.5  parent=False suspended=False active=True
+   'Over '                            handicap=59.5    sbv=' (59.5)'    price=2.04
+   'Under '                           handicap=59.5    sbv=' (59.5)'    price=1.7
+
+MARKET id=73719360236quarternr=2~total=57.5~  2nd Quarter - Total | 2nd Quarter - Total (57.5)  handicap=57.5  parent=False suspended=False active=True
+   'Over '                            handicap=57.5    sbv=' (57.5)'    price=1.9
+   'Under '                           handicap=57.5    sbv=' (57.5)'    price=1.8
+
+MARKET id=73719360236quarternr=3~total=63.5~  3rd Quarter - Total | 3rd Quarter - Total (63.5)  handicap=63.5  parent=False suspended=False active=True
+   'Over '                            handicap=63.5    sbv=' (63.5)'    price=1.88
+   'Under '                           handicap=63.5    sbv=' (63.5)'    price=1.83
+
+MARKET id=73719360236quarternr=4~total=60.5~  4th Quarter - Total | 4th Quarter - Total (60.5)  handicap=60.5  parent=False suspended=False active=True
+   'Over '                            handicap=60.5    sbv=' (60.5)'    price=1.79
+   'Under '                           handicap=60.5    sbv=' (60.5)'    price=1.92
+
+MARKET id=73719360292total=240.5~  Winner & Total (Incl. Overtime) | Winner & Total (Incl. Overtime)  handicap=240.5  parent=False suspended=False active=True
+   'Milwaukee Bucks & Over '          handicap=240.5   sbv=' (240.5)'   price=3.45
+   'Chicago Bulls & Over '            handicap=240.5   sbv=' (240.5)'   price=3.75
+   'Milwaukee Bucks & Under '         handicap=240.5   sbv=' (240.5)'   price=3.4
+   'Chicago Bulls & Under '           handicap=240.5   sbv=' (240.5)'   price=3.75
+
+MARKET id=73719360297total=239~  Total (Over-Exact-Under) | Total (Over-Exact-Under)  handicap=239  parent=False suspended=False active=True
+   'Under '                           handicap=239     sbv=' (239)'     price=1.89
+   'Exact '                           handicap=239     sbv=' (+239)'    price=35
+   'Over '                            handicap=239     sbv=' (239)'     price=1.84
+
+MARKET id=73719360303quarternr=1~hcp=-0.5~  1st Quarter - Handicap | 1st Quarter Handicap (0.5)  handicap=-0.5  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=-0.5    sbv=' (-0.5)'    price=1.89
+   'Chicago Bulls'                    handicap=-0.5    sbv=' (+0.5)'    price=1.81
+
+MARKET id=73719360303quarternr=1~hcp=-1.5~  1st Quarter - Handicap | 1st Quarter Handicap (1.5)  handicap=-1.5  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=-1.5    sbv=' (-1.5)'    price=2.08
+   'Chicago Bulls'                    handicap=-1.5    sbv=' (+1.5)'    price=1.67
+
+MARKET id=73719360303quarternr=1~hcp=0.5~  1st Quarter - Handicap | 1st Quarter Handicap (0.5)  handicap=0.5  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=0.5     sbv=' (+0.5)'    price=1.73
+   'Chicago Bulls'                    handicap=0.5     sbv=' (-0.5)'    price=1.99
+
+MARKET id=73719360303quarternr=2~hcp=-0.5~  2nd Quarter - Handicap | 2nd Period - Handicap (0.5)  handicap=-0.5  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=-0.5    sbv=' (-0.5)'    price=1.9
+   'Chicago Bulls'                    handicap=-0.5    sbv=' (+0.5)'    price=1.8
+
+MARKET id=73719360303quarternr=3~hcp=-0.5~  3rd Quarter - Handicap | 3rd Period - Handicap (0.5)  handicap=-0.5  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=-0.5    sbv=' (-0.5)'    price=1.89
+   'Chicago Bulls'                    handicap=-0.5    sbv=' (+0.5)'    price=1.81
+
+MARKET id=73719360303quarternr=4~hcp=-0.5~  4th Quarter - Handicap | 4th Period - Handicap (0.5)  handicap=-0.5  parent=False suspended=False active=True
+   'Milwaukee Bucks'                  handicap=-0.5    sbv=' (-0.5)'    price=1.92
+   'Chicago Bulls'                    handicap=-0.5    sbv=' (+0.5)'    price=1.79
+
+MARKET id=73719360756quarternr=1~total=28.5~  1st Quarter - Milwaukee Bucks Total | 1st Quarter - Milwaukee Bucks Total (28.5)  handicap=28.5  parent=False suspended=False active=True
+   'Over '                            handicap=28.5    sbv=' (28.5)'    price=1.67
+   'Under '                           handicap=28.5    sbv=' (28.5)'    price=2.08
+
+MARKET id=73719360756quarternr=1~total=29.5~  1st Quarter - Milwaukee Bucks Total | 1st Quarter - Milwaukee Bucks Total (29.5)  handicap=29.5  parent=False suspended=False active=True
+   'Over '                            handicap=29.5    sbv=' (29.5)'    price=1.9
+   'Under '                           handicap=29.5    sbv=' (29.5)'    price=1.81
+
+MARKET id=73719360756quarternr=1~total=30.5~  1st Quarter - Milwaukee Bucks Total | 1st Quarter - Milwaukee Bucks Total (30.5)  handicap=30.5  parent=False suspended=False active=True
+   'Over '                            handicap=30.5    sbv=' (30.5)'    price=2.2
+   'Under '                           handicap=30.5    sbv=' (30.5)'    price=1.6
+
+MARKET id=73719360757quarternr=1~total=29.5~  1st Quarter - Chicago Bulls Total | 1st Quarter - Chicago Bulls Total (29.5)  handicap=29.5  parent=False suspended=False active=True
+   'Over '                            handicap=29.5    sbv=' (29.5)'    price=1.97
+   'Under '                           handicap=29.5    sbv=' (29.5)'    price=1.74
+
+MARKET id=73719360757quarternr=1~total=30.5~  1st Quarter - Chicago Bulls Total | 1st Quarter - Chicago Bulls Total (30.5)  handicap=30.5  parent=False suspended=False active=True
+   'Over '                            handicap=30.5    sbv=' (30.5)'    price=2.3
+   'Under '                           handicap=30.5    sbv=' (30.5)'    price=1.55
+
+MARKET id=73719360757quarternr=1~total=28.5~  1st Quarter - Chicago Bulls Total | 1st Quarter - Chicago Bulls Total (28.5)  handicap=28.5  parent=False suspended=False active=True
+   'Over '                            handicap=28.5    sbv=' (28.5)'    price=1.72
+   'Under '                           handicap=28.5    sbv=' (28.5)'    price=2

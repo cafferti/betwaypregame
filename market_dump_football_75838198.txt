@@ -1,0 +1,615 @@
+EVENT 75838198: None vs None  (sport football)
+event fields: []
+
+=== ALL 133 MARKET NAMES (name | displayName | id) ===
+  [Win/Draw/Win] | 1X2 | 758381981
+  [Double Chance] | Double Chance | 7583819810
+  [Draw No Bet] | Draw No Bet | 7583819811
+  [Total Goals] | Total Goals | 7583819818
+  Total | Total (0.5) | 7583819818total=0.5~
+  Total | Total (1.5) | 7583819818total=1.5~
+  Total | Total (2.5) | 7583819818total=2.5~
+  Total | Total (3.5) | 7583819818total=3.5~
+  Total | Total (4.5) | 7583819818total=4.5~
+  [Both Teams To Score] | BTTS (GG/NG) | 7583819829
+  [Handicap] [2-Way] | Handicap 2-Way | 7583819816
+  Handicap | Handicap (0 : 0.5) | 7583819816hcp=-0.5~
+  Handicap | Handicap (0 : 1.5) | 7583819816hcp=-1.5~
+  Handicap | Handicap (0.5 : 0) | 7583819816hcp=0.5~
+  [Handicap] [3-Way] | Handicap - 3 Way  | 7583819814
+  Handicap 0:1 | Handicap (0:1) | 7583819814hcp=0:1~
+  Handicap 0:2 | Handicap (0:2) | 7583819814hcp=0:2~
+  Handicap 0:3 | Handicap (0:3) | 7583819814hcp=0:3~
+  Handicap 1:0 | Handicap (1:0) | 7583819814hcp=1:0~
+  Handicap 2:0 | Handicap (2:0) | 7583819814hcp=2:0~
+  1X2 & Total | 1X2 & Total (1.5) | 7583819837total=1.5~
+  1X2 & Total | 1X2 & Total (2.5) | 7583819837total=2.5~
+  1X2 & Total | 1X2 & Total (3.5) | 7583819837total=3.5~
+  1X2 & Total | 1X2 & Total (4.5) | 7583819837total=4.5~
+  Which Team To Score | Which Team To Score | 7583819830
+  1X2 & Both Teams To Score | 1X2 & Both Teams To Score | 7583819835
+  Exact Goals | Exact Goals | 7583819821variant=sr:exact_goals:6+~
+  Goal Range | Goal Range | 7583819825variant=sr:goal_range:7+~
+  Goal Range | Goal Range | 7583819825variant=sr:point_range:6+~
+  Total & Both Teams To Score | Total & Both Teams To Score (2.5) | 7583819836total=2.5~
+  1st/2nd Half Both Teams To Score | 1st/2nd Half Both Teams To Score | 7583819855
+  Multiscores | Multi Scores | 75838198551
+  Double Chance (Match) & 1st Half Both Teams Score | Double Chance (Match) & 1st Half Both Teams Score | 75838198540
+  Double Chance (Match) & 2nd Half Both Teams Score | Double Chance (Match) & 2nd Half Both Teams Score | 75838198541
+  Double Chance & Total | Double Chance & Total (1.5) | 75838198547total=1.5~
+  Double Chance & Total | Double Chance & Total (2.5) | 75838198547total=2.5~
+  Double Chance & Total | Double Chance & Total (3.5) | 75838198547total=3.5~
+  Double Chance & Total | Double Chance & Total (4.5) | 75838198547total=4.5~
+  Halftime/Fulltime & Total | Halftime/Fulltime & Total (3.5) | 75838198818total=3.5~
+  Halftime/Fulltime & Total | Halftime/Fulltime & Total (4.5) | 75838198818total=4.5~
+  Halftime/Fulltime & Total | Halftime/Fulltime & Total (1.5) | 75838198818total=1.5~
+  Halftime/Fulltime & Total | Halftime/Fulltime & Total (2.5) | 75838198818total=2.5~
+  Halftime/Fulltime & 1st Half Total | Halftime/Fulltime & 1st Half Total (0.5) | 75838198819total=0.5~
+  Halftime/Fulltime & 1st Half Total | Halftime/Fulltime & 1st Half Total (1.5) | 75838198819total=1.5~
+  Halftime/Fulltime & 1st Half Total | Halftime/Fulltime & 1st Half Total (2.5) | 75838198819total=2.5~
+  Draw Or Over 2.5 | Draw Or Over (2.5) | 75838198856total=2.5~
+  Draw Or Under 2.5 | Draw Or Under (2.5) | 75838198857total=2.5~
+  Draw Or Both Teams To Score | Draw Or Both Teams To Score | 75838198861
+  [1st Half] - [Win/Draw/Win] | 1st Half - 1X2 | 7583819860
+  1st Half - 1X2 & Both Teams To Score | 1st Half - 1X2 & Both Teams To Score | 7583819878
+  1st Half - Double Chance | 1st Half - Double Chance | 7583819863
+  [1st Half] [Both Teams To Score] | 1st Half - Both Teams To Score (GG/NG) | 7583819875
+  1st Half - 1X2 & Total | 1st Half - 1X2 & Total (1.5) | 7583819879total=1.5~
+  1st Half - Correct Score | 1st Half - Correct Score | 7583819881
+  1st Half - Multigoals | 1st Half - Multigoals | 75838198552
+  1st Half - Double Chance & Both Teams To Score | 1st Half - Double Chance & Both Teams To Score | 75838198542
+  [2nd Half] - [Win/Draw/Win] | 2nd Half - 1X2 | 7583819883
+  [2nd Half] [Both Teams To Score] | 2nd Half - Both Teams To Score (GG/NG) | 75838198543
+  2nd Half - 1X2 & Total | 2nd Half - 1X2 & Total (1.5) | 75838198544total=1.5~
+  2nd Half - Double Chance | 2nd Half - Double Chance | 7583819885
+  2nd Half - Both Teams To Score | 2nd Half - Both Teams To Score (GG/NG) | 7583819895
+  2nd Half - Double Chance & Both Teams To Score | 2nd Half - Double Chance & Both Teams To Score | 75838198545
+  2nd Half - Multigoals | 2nd Half - Multigoals | 75838198553
+  Correct Score | Correct Score | 7583819845
+  [Home Team] No Bet | Guairena FC No Bet | 7583819812
+  [Away Team] No Bet | Sportivo Carapegua No Bet | 7583819813
+  [Home Team] Total Goals | Guairena FC - Total Goals | 7583819819
+  Guairena FC Total | Guairena FC Total (0.5) | 7583819819total=0.5~
+  Guairena FC Total | Guairena FC Total (1.5) | 7583819819total=1.5~
+  Guairena FC Total | Guairena FC Total (2.5) | 7583819819total=2.5~
+  Guairena FC Total | Guairena FC Total (3.5) | 7583819819total=3.5~
+  Guairena FC Total | Guairena FC Total (4.5) | 7583819819total=4.5~
+  [Away Team] Total Goals | Sportivo Carapegua - Total Goals | 7583819820
+  Sportivo Carapegua Total | Sportivo Carapegua Total (0.5) | 7583819820total=0.5~
+  Sportivo Carapegua Total | Sportivo Carapegua Total (1.5) | 7583819820total=1.5~
+  Sportivo Carapegua Total | Sportivo Carapegua Total (2.5) | 7583819820total=2.5~
+  Sportivo Carapegua Total | Sportivo Carapegua Total (3.5) | 7583819820total=3.5~
+  Sportivo Carapegua Total | Sportivo Carapegua Total (4.5) | 7583819820total=4.5~
+  Guairena FC Exact Goals | Guairena FC Exact Goals | 7583819823variant=sr:exact_goals:3+~
+  Sportivo Carapegua Exact Goals | Sportivo Carapegua Exact Goals | 7583819824variant=sr:exact_goals:3+~
+  [Home Team] [Win To Nil] | Guairena FC Win To Nil | 7583819833
+  [Away Team] [Win To Nil] | Sportivo Carapegua Win To Nil | 7583819834
+  Halftime/Fulltime Correct Score | Halftime/Fulltime Correct Score | 7583819846
+  Halftime/Fulltime | Half Time / Full Time | 7583819847
+  [Home Team] To Win Both Halves | Guairena FC - To Win Both Halves | 7583819848
+  [Away Team] To Win Both Halves | Sportivo Carapegua - To Win Both Halves | 7583819849
+  [Home Team] To Win Either Half | Guairena FC To Win Either Half | 7583819850
+  [Away Team] To Win Either Half | Sportivo Carapegua To Win Either Half | 7583819851
+  Highest Scoring Half | Highest Scoring Half | 7583819852
+  [Home Team] Highest Scoring Half | Guairena FC Highest Scoring Half | 7583819853
+  [Away Team] Highest Scoring Half | Sportivo Carapegua Highest Scoring Half | 7583819854
+  [Double Chance] [and] [Both Teams To Score] | Double Chance & Both Teams To Score (GG/NG) | 75838198546
+  [Home Team] To Score In Both Halves | Guairena FC - To Score In Both Halves | 7583819856
+  [Away Team] To Score In Both Halves | Sportivo Carapegua - To Score In Both Halves | 7583819857
+  Both Halves Over 1.5 | Both Halves Over (1.5) | 7583819858total=1.5~
+  Both Halves Under 1.5 | Both Halves Under (1.5) | 7583819859total=1.5~
+  1st Half - Draw No Bet | 1st Half - Draw No Bet | 7583819864
+  1st Half - Handicap 0:1 | 1st Half - Handicap (0:1) | 7583819865hcp=0:1~
+  1st Half - Handicap 0:2 | 1st Half - Handicap (0:2) | 7583819865hcp=0:2~
+  1st Half - Handicap 1:0 | 1st Half - Handicap (1:0) | 7583819865hcp=1:0~
+  1st Half - Handicap 2:0 | 1st Half - Handicap (2:0) | 7583819865hcp=2:0~
+  1st Half - Handicap | 1st Half - Handicap (0 : 0.5) | 7583819866hcp=-0.5~
+  1st Half - Handicap | 1st Half - Handicap (0.5 : 0) | 7583819866hcp=0.5~
+  1st Half - [Home Team] Total | 1st Half - Guairena FC Total | 7583819869
+  1st Half - Guairena FC Total | 1st Half - Guairena FC Total (0.5) | 7583819869total=0.5~
+  1st Half - Guairena FC Total | 1st Half - Guairena FC Total (1.5) | 7583819869total=1.5~
+  1st Half - Guairena FC Total | 1st Half - Guairena FC Total (2.5) | 7583819869total=2.5~
+  1st Half - [Away Team] Total | 1st Half - Sportivo Carapegua Total | 7583819870
+  1st Half - Sportivo Carapegua Total | 1st Half - Sportivo Carapegua Total (0.5) | 7583819870total=0.5~
+  1st Half - Sportivo Carapegua Total | 1st Half - Sportivo Carapegua Total (1.5) | 7583819870total=1.5~
+  1st Half - Sportivo Carapegua Total | 1st Half - Sportivo Carapegua Total (2.5) | 7583819870total=2.5~
+  2nd Half - Draw No Bet | 2nd Half - Draw No Bet | 7583819886
+  2nd Half - Handicap 0:1 | 2nd Half - Handicap (0:1) | 7583819887hcp=0:1~
+  2nd Half - Handicap 0:2 | 2nd Half - Handicap (0:2) | 7583819887hcp=0:2~
+  2nd Half - Handicap 1:0 | 2nd Half - Handicap (1:0) | 7583819887hcp=1:0~
+  2nd Half - Handicap 2:0 | 2nd Half - Handicap (2:0) | 7583819887hcp=2:0~
+  2nd Half - Handicap - 2 Way 0.5 | 2nd Half - Handicap - 2 Way (0.5) | 7583819888
+  2nd Half - Handicap | 2nd Half - Handicap (0 : 0.5) | 7583819888hcp=-0.5~
+  2nd Half - Handicap | 2nd Half - Handicap (0.5 : 0) | 7583819888hcp=0.5~
+  2nd Half - Correct Score | 2nd Half - Correct Score | 7583819898
+  MultiGoals | Multi Goals | 75838198548
+  [Home Team] Multigoals | Guairena FC Multigoals | 75838198549
+  [Away Team] Multigoals | Sportivo Carapegua Multigoals | 75838198550
+  Halftime/Fulltime & Exact Goals | Halftime/Fulltime & Exact Goals | 75838198820
+  Guairena FC Or Over 2.5 | Guairena FC Or Over (2.5) | 75838198854total=2.5~
+  Guairena FC Or Under 2.5 | Guairena FC Or Under (2.5) | 75838198855total=2.5~
+  Sportivo Carapegua Or Over 2.5 | Sportivo Carapegua Or Over (2.5) | 75838198858total=2.5~
+  Sportivo Carapegua Or Under 2.5 | Sportivo Carapegua Or Under (2.5) | 75838198859total=2.5~
+  [Home Team] Or Both Teams To Score | Guairena FC Or Both Teams To Score | 75838198860
+  [Away Team] Or Both Teams To Score | Sportivo Carapegua Or Both Teams To Score | 75838198862
+  [Away Team] To Win | Sportivo Carapegua To Win | 75838198879
+  [Home Team] To Win | Guairena FC To Win | 75838198880
+  Any Team To Win | Any Team To Win | 75838198881
+
+=== DETAIL (selections listed under the market they BELONG to) ===
+
+MARKET id=758381981  [Win/Draw/Win] | 1X2  handicap=0  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=0       sbv=''           price=2.45
+   'Draw'                             handicap=0       sbv=''           price=3.4
+   'Sportivo Carapegua'               handicap=0       sbv=''           price=2.46
+   (+55 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819818  [Total Goals] | Total Goals  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=0.5     sbv=' (0.5)'     price=1.03
+   'Under '                           handicap=0.5     sbv=' (0.5)'     price=6.8
+   'Over '                            handicap=1.5     sbv=' (1.5)'     price=1.2
+   'Under '                           handicap=1.5     sbv=' (1.5)'     price=3.45
+   'Over '                            handicap=2.5     sbv=' (2.5)'     price=1.67
+   'Under '                           handicap=2.5     sbv=' (2.5)'     price=1.92
+   'Over '                            handicap=3.5     sbv=' (3.5)'     price=2.6
+   'Under '                           handicap=3.5     sbv=' (3.5)'     price=1.36
+   'Over '                            handicap=4.5     sbv=' (4.5)'     price=4.4
+   'Under '                           handicap=4.5     sbv=' (4.5)'     price=1.12
+
+MARKET id=7583819818total=0.5~  Total | Total (0.5)  handicap=0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819818total=1.5~  Total | Total (1.5)  handicap=1.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819818total=2.5~  Total | Total (2.5)  handicap=2.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819818total=3.5~  Total | Total (3.5)  handicap=3.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819818total=4.5~  Total | Total (4.5)  handicap=4.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819816  [Handicap] [2-Way] | Handicap 2-Way  handicap=0  parent=True suspended=False active=True
+   'Guairena FC'                      handicap=0.5     sbv=' (0.5 : 0)' price=1.43
+   'Sportivo Carapegua'               handicap=0.5     sbv=' (0.5 : 0)' price=2.27
+   'Guairena FC'                      handicap=-0.5    sbv=' (0 : 0.5)' price=2.26
+   'Sportivo Carapegua'               handicap=-0.5    sbv=' (0 : 0.5)' price=1.43
+   'Guairena FC'                      handicap=1.5     sbv=' (1.5 : 0)' price=1.15
+   'Sportivo Carapegua'               handicap=1.5     sbv=' (1.5 : 0)' price=3.7
+   'Guairena FC'                      handicap=-1.5    sbv=' (0 : 1.5)' price=3.95
+   'Sportivo Carapegua'               handicap=-1.5    sbv=' (0 : 1.5)' price=1.13
+
+MARKET id=7583819816hcp=-0.5~  Handicap | Handicap (0 : 0.5)  handicap=-0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819816hcp=-1.5~  Handicap | Handicap (0 : 1.5)  handicap=-1.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819816hcp=0.5~  Handicap | Handicap (0.5 : 0)  handicap=0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819814  [Handicap] [3-Way] | Handicap - 3 Way   handicap=0  parent=True suspended=False active=True
+   'Guairena FC'                      handicap=-1      sbv=' (0 : 1)'   price=4.7
+   'Guairena FC'                      handicap=1       sbv=' (1 : 0)'   price=1.45
+   'Draw'                             handicap=-1      sbv=' (0 : 1)'   price=4.2
+   'Draw'                             handicap=1       sbv=' (1 : 0)'   price=4.2
+   'Sportivo Carapegua'               handicap=-1      sbv=' (0 : 1)'   price=1.45
+   'Sportivo Carapegua'               handicap=1       sbv=' (1 : 0)'   price=4.7
+   'Guairena FC'                      handicap=-2      sbv=' (0 : 2)'   price=10
+   'Guairena FC'                      handicap=2       sbv=' (2 : 0)'   price=1.13
+   'Draw'                             handicap=-2      sbv=' (0 : 2)'   price=6.2
+   'Draw'                             handicap=2       sbv=' (2 : 0)'   price=6.2
+   'Sportivo Carapegua'               handicap=-2      sbv=' (0 : 2)'   price=1.13
+   'Sportivo Carapegua'               handicap=2       sbv=' (2 : 0)'   price=10
+   'Guairena FC'                      handicap=3       sbv=' (3 : 0)'   price=1.03
+   'Draw'                             handicap=3       sbv=' (3 : 0)'   price=8.6
+   'Sportivo Carapegua'               handicap=3       sbv=' (3 : 0)'   price=18
+   'Guairena FC'                      handicap=-3      sbv=' (0 : 3)'   price=19
+   'Draw'                             handicap=-3      sbv=' (0 : 3)'   price=8.8
+   'Sportivo Carapegua'               handicap=-3      sbv=' (0 : 3)'   price=1.03
+
+MARKET id=7583819814hcp=0:1~  Handicap 0:1 | Handicap (0:1)  handicap=-1  parent=False suspended=False active=True
+   (+3 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819814hcp=0:2~  Handicap 0:2 | Handicap (0:2)  handicap=-2  parent=False suspended=False active=True
+   (+3 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819814hcp=0:3~  Handicap 0:3 | Handicap (0:3)  handicap=-3  parent=False suspended=False active=True
+   (+3 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819814hcp=1:0~  Handicap 1:0 | Handicap (1:0)  handicap=1  parent=False suspended=False active=True
+   (+3 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819814hcp=2:0~  Handicap 2:0 | Handicap (2:0)  handicap=2  parent=False suspended=False active=True
+   (+3 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819837total=1.5~  1X2 & Total | 1X2 & Total (1.5)  handicap=1.5  parent=False suspended=False active=True
+   'Guairena FC & Under '             handicap=1.5     sbv=' (1.5)'     price=11
+   'Guairena FC & Over '              handicap=1.5     sbv=' (1.5)'     price=3.1
+   'Draw & Under '                    handicap=1.5     sbv=' (1.5)'     price=14
+   'Draw & Over '                     handicap=1.5     sbv=' (1.5)'     price=4.4
+   'Sportivo Carapegua & Under '      handicap=1.5     sbv=' (1.5)'     price=11
+   'Sportivo Carapegua & Over '       handicap=1.5     sbv=' (1.5)'     price=3.15
+
+MARKET id=7583819837total=2.5~  1X2 & Total | 1X2 & Total (2.5)  handicap=2.5  parent=False suspended=False active=True
+   'Guairena FC & Under '             handicap=2.5     sbv=' (2.5)'     price=6.4
+   'Guairena FC & Over '              handicap=2.5     sbv=' (2.5)'     price=3.9
+   'Draw & Under '                    handicap=2.5     sbv=' (2.5)'     price=4.8
+   'Draw & Over '                     handicap=2.5     sbv=' (2.5)'     price=11
+   'Sportivo Carapegua & Under '      handicap=2.5     sbv=' (2.5)'     price=6.4
+   'Sportivo Carapegua & Over '       handicap=2.5     sbv=' (2.5)'     price=3.9
+
+MARKET id=7583819837total=3.5~  1X2 & Total | 1X2 & Total (3.5)  handicap=3.5  parent=False suspended=False active=True
+   'Guairena FC & Under '             handicap=3.5     sbv=' (3.5)'     price=3.65
+   'Guairena FC & Over '              handicap=3.5     sbv=' (3.5)'     price=7.2
+   'Draw & Under '                    handicap=3.5     sbv=' (3.5)'     price=4.8
+   'Draw & Over '                     handicap=3.5     sbv=' (3.5)'     price=11
+   'Sportivo Carapegua & Under '      handicap=3.5     sbv=' (3.5)'     price=3.65
+   'Sportivo Carapegua & Over '       handicap=3.5     sbv=' (3.5)'     price=7.4
+
+MARKET id=7583819837total=4.5~  1X2 & Total | 1X2 & Total (4.5)  handicap=4.5  parent=False suspended=False active=True
+   'Guairena FC & Under '             handicap=4.5     sbv=' (4.5)'     price=3.05
+   'Guairena FC & Over '              handicap=4.5     sbv=' (4.5)'     price=12
+   'Draw & Under '                    handicap=4.5     sbv=' (4.5)'     price=3.6
+   'Draw & Over '                     handicap=4.5     sbv=' (4.5)'     price=50
+   'Sportivo Carapegua & Under '      handicap=4.5     sbv=' (4.5)'     price=3.05
+   'Sportivo Carapegua & Over '       handicap=4.5     sbv=' (4.5)'     price=12
+
+MARKET id=7583819835  1X2 & Both Teams To Score | 1X2 & Both Teams To Score  handicap=0  parent=False suspended=False active=True
+   'Guairena FC & Yes'                handicap=0       sbv=''           price=4.7
+   'Guairena FC & No'                 handicap=0       sbv=''           price=5
+   'Draw & Yes'                       handicap=0       sbv=''           price=4.5
+   'Draw & No'                        handicap=0       sbv=''           price=14
+   'Sportivo Carapegua & Yes'         handicap=0       sbv=''           price=4.7
+   'Sportivo Carapegua & No'          handicap=0       sbv=''           price=5
+
+MARKET id=7583819836total=2.5~  Total & Both Teams To Score | Total & Both Teams To Score (2.5)  handicap=2.5  parent=False suspended=False active=True
+   'Over  & Yes'                      handicap=2.5     sbv=' (2.5)'     price=1.99
+   'Under  & Yes'                     handicap=2.5     sbv=' (2.5)'     price=7
+   'Over  & No'                       handicap=2.5     sbv=' (2.5)'     price=10
+   'Under  & No'                      handicap=2.5     sbv=' (2.5)'     price=2.65
+
+MARKET id=75838198547total=1.5~  Double Chance & Total | Double Chance & Total (1.5)  handicap=1.5  parent=False suspended=False active=True
+   'Guairena FC/Draw & Under '        handicap=1.5     sbv=' (1.5)'     price=5.2
+   'Guairena FC/Sportivo Carapegua & Under ' handicap=1.5     sbv=' (1.5)'     price=4.7
+   'Draw/Sportivo Carapegua & Under ' handicap=1.5     sbv=' (1.5)'     price=5.2
+   'Guairena FC/Draw & Over '         handicap=1.5     sbv=' (1.5)'     price=1.74
+   'Guairena FC/Sportivo Carapegua & Over ' handicap=1.5     sbv=' (1.5)'     price=1.52
+   'Draw/Sportivo Carapegua & Over '  handicap=1.5     sbv=' (1.5)'     price=1.74
+
+MARKET id=75838198547total=2.5~  Double Chance & Total | Double Chance & Total (2.5)  handicap=2.5  parent=False suspended=False active=True
+   'Guairena FC/Draw & Under '        handicap=2.5     sbv=' (2.5)'     price=2.55
+   'Guairena FC/Sportivo Carapegua & Under ' handicap=2.5     sbv=' (2.5)'     price=2.95
+   'Draw/Sportivo Carapegua & Under ' handicap=2.5     sbv=' (2.5)'     price=2.55
+   'Guairena FC/Draw & Over '         handicap=2.5     sbv=' (2.5)'     price=2.65
+   'Guairena FC/Sportivo Carapegua & Over ' handicap=2.5     sbv=' (2.5)'     price=1.87
+   'Draw/Sportivo Carapegua & Over '  handicap=2.5     sbv=' (2.5)'     price=2.65
+
+MARKET id=75838198547total=3.5~  Double Chance & Total | Double Chance & Total (3.5)  handicap=3.5  parent=False suspended=False active=True
+   'Guairena FC/Draw & Under '        handicap=3.5     sbv=' (3.5)'     price=1.96
+   'Guairena FC/Sportivo Carapegua & Under ' handicap=3.5     sbv=' (3.5)'     price=1.75
+   'Draw/Sportivo Carapegua & Under ' handicap=3.5     sbv=' (3.5)'     price=1.97
+   'Guairena FC/Draw & Over '         handicap=3.5     sbv=' (3.5)'     price=3.95
+   'Guairena FC/Sportivo Carapegua & Over ' handicap=3.5     sbv=' (3.5)'     price=3.3
+   'Draw/Sportivo Carapegua & Over '  handicap=3.5     sbv=' (3.5)'     price=3.95
+
+MARKET id=75838198547total=4.5~  Double Chance & Total | Double Chance & Total (4.5)  handicap=4.5  parent=False suspended=False active=True
+   'Guairena FC/Draw & Under '        handicap=4.5     sbv=' (4.5)'     price=1.57
+   'Guairena FC/Sportivo Carapegua & Under ' handicap=4.5     sbv=' (4.5)'     price=1.47
+   'Draw/Sportivo Carapegua & Under ' handicap=4.5     sbv=' (4.5)'     price=1.57
+   'Guairena FC/Draw & Over '         handicap=4.5     sbv=' (4.5)'     price=8
+   'Guairena FC/Sportivo Carapegua & Over ' handicap=4.5     sbv=' (4.5)'     price=5
+   'Draw/Sportivo Carapegua & Over '  handicap=4.5     sbv=' (4.5)'     price=8
+
+MARKET id=75838198818total=3.5~  Halftime/Fulltime & Total | Halftime/Fulltime & Total (3.5)  handicap=3.5  parent=False suspended=False active=True
+   'Guairena FC/Guairena FC & Under ' handicap=3.5     sbv=' (3.5)'     price=6.4
+   'Guairena FC/Draw & Under '        handicap=3.5     sbv=' (3.5)'     price=27
+   'Guairena FC/Sportivo Carapegua & Under ' handicap=3.5     sbv=' (3.5)'     price=60
+   'Draw/Guairena FC & Under '        handicap=3.5     sbv=' (3.5)'     price=8
+   'Draw/Draw & Under '               handicap=3.5     sbv=' (3.5)'     price=6.8
+   'Draw/Sportivo Carapegua & Under ' handicap=3.5     sbv=' (3.5)'     price=8
+   'Sportivo Carapegua/Guairena FC & Under ' handicap=3.5     sbv=' (3.5)'     price=60
+   'Sportivo Carapegua/Draw & Under ' handicap=3.5     sbv=' (3.5)'     price=27
+   'Sportivo Carapegua/Sportivo Carapegua & Under ' handicap=3.5     sbv=' (3.5)'     price=6.4
+   'Guairena FC/Guairena FC & Over '  handicap=3.5     sbv=' (3.5)'     price=11
+   'Guairena FC/Draw & Over '         handicap=3.5     sbv=' (3.5)'     price=30
+   'Guairena FC/Sportivo Carapegua & Over ' handicap=3.5     sbv=' (3.5)'     price=50
+   'Draw/Guairena FC & Over '         handicap=3.5     sbv=' (3.5)'     price=28
+   'Draw/Draw & Over '                handicap=3.5     sbv=' (3.5)'     price=30
+   'Draw/Sportivo Carapegua & Over '  handicap=3.5     sbv=' (3.5)'     price=29
+   'Sportivo Carapegua/Guairena FC & Over ' handicap=3.5     sbv=' (3.5)'     price=50
+   'Sportivo Carapegua/Draw & Over '  handicap=3.5     sbv=' (3.5)'     price=30
+   'Sportivo Carapegua/Sportivo Carapegua & Over ' handicap=3.5     sbv=' (3.5)'     price=11
+
+MARKET id=75838198818total=4.5~  Halftime/Fulltime & Total | Halftime/Fulltime & Total (4.5)  handicap=4.5  parent=False suspended=False active=True
+   'Guairena FC/Guairena FC & Under ' handicap=4.5     sbv=' (4.5)'     price=5
+   'Guairena FC/Draw & Under '        handicap=4.5     sbv=' (4.5)'     price=16
+   'Guairena FC/Sportivo Carapegua & Under ' handicap=4.5     sbv=' (4.5)'     price=50
+   'Draw/Guairena FC & Under '        handicap=4.5     sbv=' (4.5)'     price=7.2
+   'Draw/Draw & Under '               handicap=4.5     sbv=' (4.5)'     price=5.8
+   'Draw/Sportivo Carapegua & Under ' handicap=4.5     sbv=' (4.5)'     price=7.2
+   'Sportivo Carapegua/Guairena FC & Under ' handicap=4.5     sbv=' (4.5)'     price=50
+   'Sportivo Carapegua/Draw & Under ' handicap=4.5     sbv=' (4.5)'     price=16
+   'Sportivo Carapegua/Sportivo Carapegua & Under ' handicap=4.5     sbv=' (4.5)'     price=5.2
+   'Guairena FC/Guairena FC & Over '  handicap=4.5     sbv=' (4.5)'     price=18
+   'Guairena FC/Draw & Over '         handicap=4.5     sbv=' (4.5)'     price=101
+   'Guairena FC/Sportivo Carapegua & Over ' handicap=4.5     sbv=' (4.5)'     price=70
+   'Draw/Guairena FC & Over '         handicap=4.5     sbv=' (4.5)'     price=50
+   'Draw/Draw & Over '                handicap=4.5     sbv=' (4.5)'     price=101
+   'Draw/Sportivo Carapegua & Over '  handicap=4.5     sbv=' (4.5)'     price=50
+   'Sportivo Carapegua/Guairena FC & Over ' handicap=4.5     sbv=' (4.5)'     price=70
+   'Sportivo Carapegua/Draw & Over '  handicap=4.5     sbv=' (4.5)'     price=101
+   'Sportivo Carapegua/Sportivo Carapegua & Over ' handicap=4.5     sbv=' (4.5)'     price=18
+
+MARKET id=75838198818total=1.5~  Halftime/Fulltime & Total | Halftime/Fulltime & Total (1.5)  handicap=1.5  parent=False suspended=False active=True
+   'Guairena FC/Guairena FC & Under ' handicap=1.5     sbv=' (1.5)'     price=24
+   'Draw/Guairena FC & Under '        handicap=1.5     sbv=' (1.5)'     price=17
+   'Draw/Draw & Under '               handicap=1.5     sbv=' (1.5)'     price=13
+   'Draw/Sportivo Carapegua & Under ' handicap=1.5     sbv=' (1.5)'     price=17
+   'Sportivo Carapegua/Sportivo Carapegua & Under ' handicap=1.5     sbv=' (1.5)'     price=24
+   'Guairena FC/Guairena FC & Over '  handicap=1.5     sbv=' (1.5)'     price=4.8
+   'Guairena FC/Draw & Over '         handicap=1.5     sbv=' (1.5)'     price=15
+   'Guairena FC/Sportivo Carapegua & Over ' handicap=1.5     sbv=' (1.5)'     price=29
+   'Draw/Guairena FC & Over '         handicap=1.5     sbv=' (1.5)'     price=9.6
+   'Draw/Draw & Over '                handicap=1.5     sbv=' (1.5)'     price=9.4
+   'Draw/Sportivo Carapegua & Over '  handicap=1.5     sbv=' (1.5)'     price=9.6
+   'Sportivo Carapegua/Guairena FC & Over ' handicap=1.5     sbv=' (1.5)'     price=29
+   'Sportivo Carapegua/Draw & Over '  handicap=1.5     sbv=' (1.5)'     price=15
+   'Sportivo Carapegua/Sportivo Carapegua & Over ' handicap=1.5     sbv=' (1.5)'     price=4.8
+
+MARKET id=75838198818total=2.5~  Halftime/Fulltime & Total | Halftime/Fulltime & Total (2.5)  handicap=2.5  parent=False suspended=False active=True
+   'Guairena FC/Guairena FC & Under ' handicap=2.5     sbv=' (2.5)'     price=12
+   'Guairena FC/Draw & Under '        handicap=2.5     sbv=' (2.5)'     price=27
+   'Draw/Guairena FC & Under '        handicap=2.5     sbv=' (2.5)'     price=12
+   'Draw/Draw & Under '               handicap=2.5     sbv=' (2.5)'     price=6.8
+   'Draw/Sportivo Carapegua & Under ' handicap=2.5     sbv=' (2.5)'     price=12
+   'Sportivo Carapegua/Draw & Under ' handicap=2.5     sbv=' (2.5)'     price=27
+   'Sportivo Carapegua/Sportivo Carapegua & Under ' handicap=2.5     sbv=' (2.5)'     price=12
+   'Guairena FC/Guairena FC & Over '  handicap=2.5     sbv=' (2.5)'     price=6
+   'Guairena FC/Draw & Over '         handicap=2.5     sbv=' (2.5)'     price=30
+   'Guairena FC/Sportivo Carapegua & Over ' handicap=2.5     sbv=' (2.5)'     price=29
+   'Draw/Guairena FC & Over '         handicap=2.5     sbv=' (2.5)'     price=12
+   'Draw/Draw & Over '                handicap=2.5     sbv=' (2.5)'     price=30
+   'Draw/Sportivo Carapegua & Over '  handicap=2.5     sbv=' (2.5)'     price=13
+   'Sportivo Carapegua/Guairena FC & Over ' handicap=2.5     sbv=' (2.5)'     price=29
+   'Sportivo Carapegua/Draw & Over '  handicap=2.5     sbv=' (2.5)'     price=30
+   'Sportivo Carapegua/Sportivo Carapegua & Over ' handicap=2.5     sbv=' (2.5)'     price=6.2
+
+MARKET id=75838198819total=0.5~  Halftime/Fulltime & 1st Half Total | Halftime/Fulltime & 1st Half Total (0.5)  handicap=0.5  parent=False suspended=False active=True
+   'Draw/Guairena FC & Under '        handicap=0.5     sbv=' (0.5)'     price=8.8
+   'Draw/Draw & Under '               handicap=0.5     sbv=' (0.5)'     price=7.8
+   'Draw/Sportivo Carapegua & Under ' handicap=0.5     sbv=' (0.5)'     price=8.8
+   'Guairena FC/Guairena FC & Over '  handicap=0.5     sbv=' (0.5)'     price=4
+   'Guairena FC/Draw & Over '         handicap=0.5     sbv=' (0.5)'     price=14
+   'Guairena FC/Sportivo Carapegua & Over ' handicap=0.5     sbv=' (0.5)'     price=29
+   'Draw/Guairena FC & Over '         handicap=0.5     sbv=' (0.5)'     price=21
+   'Draw/Draw & Over '                handicap=0.5     sbv=' (0.5)'     price=18
+   'Draw/Sportivo Carapegua & Over '  handicap=0.5     sbv=' (0.5)'     price=21
+   'Sportivo Carapegua/Guairena FC & Over ' handicap=0.5     sbv=' (0.5)'     price=29
+   'Sportivo Carapegua/Draw & Over '  handicap=0.5     sbv=' (0.5)'     price=14
+   'Sportivo Carapegua/Sportivo Carapegua & Over ' handicap=0.5     sbv=' (0.5)'     price=4.1
+
+MARKET id=75838198819total=1.5~  Halftime/Fulltime & 1st Half Total | Halftime/Fulltime & 1st Half Total (1.5)  handicap=1.5  parent=False suspended=False active=True
+   'Guairena FC/Guairena FC & Under ' handicap=1.5     sbv=' (1.5)'     price=7.4
+   'Guairena FC/Draw & Under '        handicap=1.5     sbv=' (1.5)'     price=20
+   'Guairena FC/Sportivo Carapegua & Under ' handicap=1.5     sbv=' (1.5)'     price=40
+   'Draw/Guairena FC & Under '        handicap=1.5     sbv=' (1.5)'     price=8.8
+   'Draw/Draw & Under '               handicap=1.5     sbv=' (1.5)'     price=8
+   'Draw/Sportivo Carapegua & Under ' handicap=1.5     sbv=' (1.5)'     price=8.8
+   'Sportivo Carapegua/Guairena FC & Under ' handicap=1.5     sbv=' (1.5)'     price=40
+   'Sportivo Carapegua/Draw & Under ' handicap=1.5     sbv=' (1.5)'     price=20
+   'Sportivo Carapegua/Sportivo Carapegua & Under ' handicap=1.5     sbv=' (1.5)'     price=7.4
+   'Guairena FC/Guairena FC & Over '  handicap=1.5     sbv=' (1.5)'     price=8.6
+   'Guairena FC/Draw & Over '         handicap=1.5     sbv=' (1.5)'     price=50
+   'Guairena FC/Sportivo Carapegua & Over ' handicap=1.5     sbv=' (1.5)'     price=101
+   'Draw/Guairena FC & Over '         handicap=1.5     sbv=' (1.5)'     price=21
+   'Draw/Draw & Over '                handicap=1.5     sbv=' (1.5)'     price=18
+   'Draw/Sportivo Carapegua & Over '  handicap=1.5     sbv=' (1.5)'     price=21
+   'Sportivo Carapegua/Guairena FC & Over ' handicap=1.5     sbv=' (1.5)'     price=101
+   'Sportivo Carapegua/Draw & Over '  handicap=1.5     sbv=' (1.5)'     price=50
+   'Sportivo Carapegua/Sportivo Carapegua & Over ' handicap=1.5     sbv=' (1.5)'     price=8.8
+
+MARKET id=75838198819total=2.5~  Halftime/Fulltime & 1st Half Total | Halftime/Fulltime & 1st Half Total (2.5)  handicap=2.5  parent=False suspended=False active=True
+   'Guairena FC/Guairena FC & Under ' handicap=2.5     sbv=' (2.5)'     price=5.2
+   'Guairena FC/Draw & Under '        handicap=2.5     sbv=' (2.5)'     price=18
+   'Guairena FC/Sportivo Carapegua & Under ' handicap=2.5     sbv=' (2.5)'     price=35
+   'Draw/Guairena FC & Under '        handicap=2.5     sbv=' (2.5)'     price=6.4
+   'Draw/Draw & Under '               handicap=2.5     sbv=' (2.5)'     price=5.8
+   'Draw/Sportivo Carapegua & Under ' handicap=2.5     sbv=' (2.5)'     price=6.4
+   'Sportivo Carapegua/Guairena FC & Under ' handicap=2.5     sbv=' (2.5)'     price=35
+   'Sportivo Carapegua/Draw & Under ' handicap=2.5     sbv=' (2.5)'     price=18
+   'Sportivo Carapegua/Sportivo Carapegua & Under ' handicap=2.5     sbv=' (2.5)'     price=5.2
+   'Guairena FC/Guairena FC & Over '  handicap=2.5     sbv=' (2.5)'     price=17
+   'Guairena FC/Draw & Over '         handicap=2.5     sbv=' (2.5)'     price=80
+   'Guairena FC/Sportivo Carapegua & Over ' handicap=2.5     sbv=' (2.5)'     price=101
+   'Draw/Guairena FC & Over '         handicap=2.5     sbv=' (2.5)'     price=101
+   'Draw/Draw & Over '                handicap=2.5     sbv=' (2.5)'     price=101
+   'Draw/Sportivo Carapegua & Over '  handicap=2.5     sbv=' (2.5)'     price=101
+   'Sportivo Carapegua/Guairena FC & Over ' handicap=2.5     sbv=' (2.5)'     price=101
+   'Sportivo Carapegua/Draw & Over '  handicap=2.5     sbv=' (2.5)'     price=80
+   'Sportivo Carapegua/Sportivo Carapegua & Over ' handicap=2.5     sbv=' (2.5)'     price=18
+
+MARKET id=7583819860  [1st Half] - [Win/Draw/Win] | 1st Half - 1X2  handicap=0  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=0       sbv=''           price=2.95
+   'Draw'                             handicap=0       sbv=''           price=2.15
+   'Sportivo Carapegua'               handicap=0       sbv=''           price=2.95
+
+MARKET id=7583819878  1st Half - 1X2 & Both Teams To Score | 1st Half - 1X2 & Both Teams To Score  handicap=0  parent=False suspended=False active=True
+   'Guairena FC & Yes'                handicap=0       sbv=''           price=18
+   'Guairena FC & No'                 handicap=0       sbv=''           price=3.65
+   'Draw & Yes'                       handicap=0       sbv=''           price=7.2
+   'Draw & No'                        handicap=0       sbv=''           price=3.1
+   'Sportivo Carapegua & Yes'         handicap=0       sbv=''           price=18
+   'Sportivo Carapegua & No'          handicap=0       sbv=''           price=3.65
+
+MARKET id=7583819879total=1.5~  1st Half - 1X2 & Total | 1st Half - 1X2 & Total (1.5)  handicap=1.5  parent=False suspended=False active=True
+   'Guairena FC & Under '             handicap=1.5     sbv=' (1.5)'     price=5
+   'Guairena FC & Over '              handicap=1.5     sbv=' (1.5)'     price=7.6
+   'Draw & Under '                    handicap=1.5     sbv=' (1.5)'     price=3.1
+   'Draw & Over '                     handicap=1.5     sbv=' (1.5)'     price=7.2
+   'Sportivo Carapegua & Under '      handicap=1.5     sbv=' (1.5)'     price=5
+   'Sportivo Carapegua & Over '       handicap=1.5     sbv=' (1.5)'     price=7.6
+
+MARKET id=7583819883  [2nd Half] - [Win/Draw/Win] | 2nd Half - 1X2  handicap=0  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=0       sbv=''           price=2.75
+   'Draw'                             handicap=0       sbv=''           price=2.6
+   'Sportivo Carapegua'               handicap=0       sbv=''           price=2.75
+
+MARKET id=75838198544total=1.5~  2nd Half - 1X2 & Total | 2nd Half - 1X2 & Total (1.5)  handicap=1.5  parent=False suspended=False active=True
+   'Guairena FC & Under '             handicap=1.5     sbv=' (1.5)'     price=4.9
+   'Guairena FC & Over '              handicap=1.5     sbv=' (1.5)'     price=4.8
+   'Draw & Under '                    handicap=1.5     sbv=' (1.5)'     price=4
+   'Draw & Over '                     handicap=1.5     sbv=' (1.5)'     price=5.4
+   'Sportivo Carapegua & Under '      handicap=1.5     sbv=' (1.5)'     price=4.9
+   'Sportivo Carapegua & Over '       handicap=1.5     sbv=' (1.5)'     price=4.8
+
+MARKET id=7583819819  [Home Team] Total Goals | Guairena FC - Total Goals  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=0.5     sbv=' (0.5)'     price=1.22
+   'Under '                           handicap=0.5     sbv=' (0.5)'     price=3.15
+   'Over '                            handicap=1.5     sbv=' (1.5)'     price=2.05
+   'Under '                           handicap=1.5     sbv=' (1.5)'     price=1.53
+   'Over '                            handicap=2.5     sbv=' (2.5)'     price=3.95
+   'Under '                           handicap=2.5     sbv=' (2.5)'     price=1.13
+   'Over '                            handicap=3.5     sbv=' (3.5)'     price=6.4
+   'Under '                           handicap=3.5     sbv=' (3.5)'     price=1.02
+   'Over '                            handicap=4.5     sbv=' (4.5)'     price=7
+   'Under '                           handicap=4.5     sbv=' (4.5)'     price=1.001
+
+MARKET id=7583819819total=0.5~  Guairena FC Total | Guairena FC Total (0.5)  handicap=0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819819total=1.5~  Guairena FC Total | Guairena FC Total (1.5)  handicap=1.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819819total=2.5~  Guairena FC Total | Guairena FC Total (2.5)  handicap=2.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819819total=3.5~  Guairena FC Total | Guairena FC Total (3.5)  handicap=3.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819819total=4.5~  Guairena FC Total | Guairena FC Total (4.5)  handicap=4.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819820  [Away Team] Total Goals | Sportivo Carapegua - Total Goals  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=0.5     sbv=' (0.5)'     price=1.22
+   'Under '                           handicap=0.5     sbv=' (0.5)'     price=3.15
+   'Over '                            handicap=1.5     sbv=' (1.5)'     price=2.06
+   'Under '                           handicap=1.5     sbv=' (1.5)'     price=1.53
+   'Over '                            handicap=2.5     sbv=' (2.5)'     price=3.95
+   'Under '                           handicap=2.5     sbv=' (2.5)'     price=1.13
+   'Over '                            handicap=3.5     sbv=' (3.5)'     price=6.4
+   'Under '                           handicap=3.5     sbv=' (3.5)'     price=1.02
+   'Over '                            handicap=4.5     sbv=' (4.5)'     price=7
+   'Under '                           handicap=4.5     sbv=' (4.5)'     price=1.001
+
+MARKET id=7583819820total=0.5~  Sportivo Carapegua Total | Sportivo Carapegua Total (0.5)  handicap=0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819820total=1.5~  Sportivo Carapegua Total | Sportivo Carapegua Total (1.5)  handicap=1.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819820total=2.5~  Sportivo Carapegua Total | Sportivo Carapegua Total (2.5)  handicap=2.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819820total=3.5~  Sportivo Carapegua Total | Sportivo Carapegua Total (3.5)  handicap=3.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819820total=4.5~  Sportivo Carapegua Total | Sportivo Carapegua Total (4.5)  handicap=4.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819865hcp=0:1~  1st Half - Handicap 0:1 | 1st Half - Handicap (0:1)  handicap=-1  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=-1      sbv=' (0 : 1)'   price=10
+   'Draw'                             handicap=-1      sbv=' (0 : 1)'   price=3.85
+   'Sportivo Carapegua'               handicap=-1      sbv=' (0 : 1)'   price=1.32
+
+MARKET id=7583819865hcp=0:2~  1st Half - Handicap 0:2 | 1st Half - Handicap (0:2)  handicap=-2  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=-2      sbv=' (0 : 2)'   price=30
+   'Draw'                             handicap=-2      sbv=' (0 : 2)'   price=7.8
+   'Sportivo Carapegua'               handicap=-2      sbv=' (0 : 2)'   price=1.04
+
+MARKET id=7583819865hcp=1:0~  1st Half - Handicap 1:0 | 1st Half - Handicap (1:0)  handicap=1  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=1       sbv=' (1 : 0)'   price=1.32
+   'Draw'                             handicap=1       sbv=' (1 : 0)'   price=3.85
+   'Sportivo Carapegua'               handicap=1       sbv=' (1 : 0)'   price=10
+
+MARKET id=7583819865hcp=2:0~  1st Half - Handicap 2:0 | 1st Half - Handicap (2:0)  handicap=2  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=2       sbv=' (2 : 0)'   price=1.04
+   'Draw'                             handicap=2       sbv=' (2 : 0)'   price=8
+   'Sportivo Carapegua'               handicap=2       sbv=' (2 : 0)'   price=30
+
+MARKET id=7583819866hcp=-0.5~  1st Half - Handicap | 1st Half - Handicap (0 : 0.5)  handicap=-0.5  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=-0.5    sbv=' (0 : 0.5)' price=2.8
+   'Sportivo Carapegua'               handicap=-0.5    sbv=' (0 : 0.5)' price=1.31
+
+MARKET id=7583819866hcp=0.5~  1st Half - Handicap | 1st Half - Handicap (0.5 : 0)  handicap=0.5  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=0.5     sbv=' (0.5 : 0)' price=1.31
+   'Sportivo Carapegua'               handicap=0.5     sbv=' (0.5 : 0)' price=2.8
+
+MARKET id=7583819869  1st Half - [Home Team] Total | 1st Half - Guairena FC Total  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=0.5     sbv=' (0.5)'     price=1.91
+   'Under '                           handicap=0.5     sbv=' (0.5)'     price=1.68
+   'Over '                            handicap=1.5     sbv=' (1.5)'     price=4.9
+   'Under '                           handicap=1.5     sbv=' (1.5)'     price=1.09
+   'Over '                            handicap=2.5     sbv=' (2.5)'     price=8
+   'Under '                           handicap=2.5     sbv=' (2.5)'     price=1.005
+
+MARKET id=7583819869total=0.5~  1st Half - Guairena FC Total | 1st Half - Guairena FC Total (0.5)  handicap=0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819869total=1.5~  1st Half - Guairena FC Total | 1st Half - Guairena FC Total (1.5)  handicap=1.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819869total=2.5~  1st Half - Guairena FC Total | 1st Half - Guairena FC Total (2.5)  handicap=2.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819870  1st Half - [Away Team] Total | 1st Half - Sportivo Carapegua Total  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=0.5     sbv=' (0.5)'     price=1.91
+   'Under '                           handicap=0.5     sbv=' (0.5)'     price=1.68
+   'Over '                            handicap=1.5     sbv=' (1.5)'     price=4.9
+   'Under '                           handicap=1.5     sbv=' (1.5)'     price=1.09
+   'Over '                            handicap=2.5     sbv=' (2.5)'     price=8
+   'Under '                           handicap=2.5     sbv=' (2.5)'     price=1.005
+
+MARKET id=7583819870total=0.5~  1st Half - Sportivo Carapegua Total | 1st Half - Sportivo Carapegua Total (0.5)  handicap=0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819870total=1.5~  1st Half - Sportivo Carapegua Total | 1st Half - Sportivo Carapegua Total (1.5)  handicap=1.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819870total=2.5~  1st Half - Sportivo Carapegua Total | 1st Half - Sportivo Carapegua Total (2.5)  handicap=2.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819887hcp=0:1~  2nd Half - Handicap 0:1 | 2nd Half - Handicap (0:1)  handicap=-1  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=-1      sbv=' (0 : 1)'   price=7.4
+   'Draw'                             handicap=-1      sbv=' (0 : 1)'   price=3.8
+   'Sportivo Carapegua'               handicap=-1      sbv=' (0 : 1)'   price=1.38
+
+MARKET id=7583819887hcp=0:2~  2nd Half - Handicap 0:2 | 2nd Half - Handicap (0:2)  handicap=-2  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=-2      sbv=' (0 : 2)'   price=22
+   'Draw'                             handicap=-2      sbv=' (0 : 2)'   price=7.2
+   'Sportivo Carapegua'               handicap=-2      sbv=' (0 : 2)'   price=1.07
+
+MARKET id=7583819887hcp=1:0~  2nd Half - Handicap 1:0 | 2nd Half - Handicap (1:0)  handicap=1  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=1       sbv=' (1 : 0)'   price=1.38
+   'Draw'                             handicap=1       sbv=' (1 : 0)'   price=3.85
+   'Sportivo Carapegua'               handicap=1       sbv=' (1 : 0)'   price=7.4
+
+MARKET id=7583819887hcp=2:0~  2nd Half - Handicap 2:0 | 2nd Half - Handicap (2:0)  handicap=2  parent=False suspended=False active=True
+   'Guairena FC'                      handicap=2       sbv=' (2 : 0)'   price=1.07
+   'Draw'                             handicap=2       sbv=' (2 : 0)'   price=7.2
+   'Sportivo Carapegua'               handicap=2       sbv=' (2 : 0)'   price=22
+
+MARKET id=7583819888  2nd Half - Handicap - 2 Way 0.5 | 2nd Half - Handicap - 2 Way (0.5)  handicap=0  parent=True suspended=False active=True
+   'Guairena FC'                      handicap=0.5     sbv=' (0.5 : 0)' price=1.37
+   'Sportivo Carapegua'               handicap=0.5     sbv=' (0.5 : 0)' price=2.55
+   'Guairena FC'                      handicap=-0.5    sbv=' (0 : 0.5)' price=2.55
+   'Sportivo Carapegua'               handicap=-0.5    sbv=' (0 : 0.5)' price=1.37
+   (+4 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819888hcp=-0.5~  2nd Half - Handicap | 2nd Half - Handicap (0 : 0.5)  handicap=-0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7583819888hcp=0.5~  2nd Half - Handicap | 2nd Half - Handicap (0.5 : 0)  handicap=0.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)

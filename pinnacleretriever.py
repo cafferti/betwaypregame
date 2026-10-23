@@ -3,6 +3,9 @@ import aiohttp
 import time
 from collections import deque
 
+import dashboard
+import netstatus
+
 BASE_URL = (
     "https://sword.pinnacleoddsdropper.com/alerts/user_2ib1Weq6qiKPFR19iNoTqmSoFoD"
 )
@@ -83,6 +86,12 @@ class OddsStreamer:
                 continue
             self._remember(key)
 
+            # Feed the live dashboard (odds-movement chart). Never blocks the bot.
+            try:
+                dashboard.record_tick(e)
+            except Exception:
+                pass
+
             self.total_passed += 1
             new_this_poll += 1
             desc = (
@@ -104,17 +113,27 @@ class OddsStreamer:
         self.cursor = f"{latest_ts}-{suffix}"
 
     async def run(self):
+        # Start the dashboard web page (http://127.0.0.1:8765) in the background.
+        try:
+            dashboard.start_server()
+        except Exception as ex:
+            print(f"[dashboard] WARNING: could not start — {ex}")
+
         connector = aiohttp.TCPConnector(limit=10, ttl_dns_cache=300, family=0)
         async with aiohttp.ClientSession(connector=connector) as session:
             consecutive_failures = 0
             print("[pinnacle] streamer started")
 
             while True:
+                await netstatus.wait_online_async()  # paused while the internet is down
                 start = time.monotonic()
                 try:
                     await self.poll_once(session)
                     consecutive_failures = 0
                 except Exception as ex:
+                    if netstatus.is_network_error(ex):
+                        netstatus.waiting("pinnacle")
+                        continue  # loop top waits until the connection is back
                     consecutive_failures += 1
                     backoff = min(MAX_BACKOFF_SEC, 3 * consecutive_failures)
                     print(

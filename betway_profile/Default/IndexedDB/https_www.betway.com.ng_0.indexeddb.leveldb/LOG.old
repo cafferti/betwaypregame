@@ -1,0 +1,14 @@
+2026/10/23-18:27:45.453 1e54 Reusing MANIFEST C:\Users\HomePC\DOCUMENTS\betwaypregame\betway_profile\Default\IndexedDB\https_www.betway.com.ng_0.indexeddb.leveldb/MANIFEST-000001
+2026/10/23-18:27:45.453 1e54 Recovering log #686
+2026/10/23-18:27:45.453 1e54 Reusing old log C:\Users\HomePC\DOCUMENTS\betwaypregame\betway_profile\Default\IndexedDB\https_www.betway.com.ng_0.indexeddb.leveldb/000686.log 
+2026/10/23-18:27:45.454 1e54 Delete type=2 #684
+2026/10/23-18:27:45.474 226c Level-0 table #691: started
+2026/10/23-18:27:45.480 226c Level-0 table #691: 660 bytes OK
+2026/10/23-18:27:45.483 226c Delete type=0 #686
+2026/10/23-18:27:45.483 1158 Manual compaction at level-0 from '\x00\xc3\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\xc4\x00\x00\x00' @ 0 : 0; will stop at '\x00\xc3\x00\x00\x05' @ 4101 : 1
+2026/10/23-18:27:45.483 1158 Compacting 1@0 + 1@1 files
+2026/10/23-18:27:45.487 1158 Generated table #692@0: 124 keys, 3803 bytes
+2026/10/23-18:27:45.487 1158 Compacted 1@0 + 1@1 files => 3803 bytes
+2026/10/23-18:27:45.490 1158 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/10/23-18:27:45.491 1158 Delete type=2 #691
+2026/10/23-18:27:45.491 1158 Manual compaction at level-0 from '\x00\xc3\x00\x00\x05' @ 4101 : 1 .. '\x00\xc4\x00\x00\x00' @ 0 : 0; will stop at (end)
