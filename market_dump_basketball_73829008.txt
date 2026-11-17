@@ -1,0 +1,128 @@
+EVENT 73829008: None vs None  (sport basketball)
+event fields: []
+
+=== ALL 25 MARKET NAMES (name | displayName | id) ===
+  [Basketball Win/Draw/Win] | 1X2 (Excl. Overtime) | 738290081
+  Winner (Incl. Overtime) | Winner (Incl. OT) | 73829008219
+  [1st Half] - [Win/Draw/Win] | 1st Half - 1X2 | 7382900860
+  Draw No Bet | Draw No Bet | 7382900811
+  Total | Total | 7382900818
+  Total | Total (125.5) | 7382900818total=125.5~
+  Will There Be Overtime | Will There Be Overtime? | 73829008220
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73829008223
+  Handicap (Incl. Overtime) | Handicap (Incl. Overtime) | 73829008223hcp=11.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73829008225
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73829008225total=125.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73829008225total=126.5~
+  Total (Incl. Overtime) | Total (Incl. Overtime) | 73829008225total=127.5~
+  Odd/Even (Incl. Overtime) | Odd/Even (Incl. Overtime) | 73829008229
+  1st Quarter - 1X2 | 1st Quarter - 1X2 | 73829008235quarternr=1~
+  1st Quarter - Total | 1st Quarter - Total (31.5) | 73829008236quarternr=1~total=31.5~
+  1st Quarter - Draw No Bet | 1st Quarter - Draw No Bet | 73829008302quarternr=1~
+  1st Quarter - Handicap | 1st Quarter Handicap (3.5) | 73829008303quarternr=1~hcp=3.5~
+  1st Quarter - Odd/Even | 1st Quarter Odd/Even | 73829008304quarternr=1~
+  1st Half - Draw No Bet | 1st Half - Draw No Bet | 7382900864
+  1st Half - Handicap | 1st Half - Handicap | 7382900866
+  1st Half - Handicap | 1st Half - Handicap (6.5) | 7382900866hcp=6.5~
+  1st Half - Total | 1st Half - Total | 7382900868
+  1st Half - Total | 1st Half - Total (62.5) | 7382900868total=62.5~
+  1st Half - Odd/Even | 1st Half - Odd/Even | 7382900874
+
+=== DETAIL (selections listed under the market they BELONG to) ===
+
+MARKET id=738290081  [Basketball Win/Draw/Win] | 1X2 (Excl. Overtime)  handicap=0  parent=False suspended=False active=True
+   'Vienna United PSV'                handicap=0       sbv=''           price=6
+   'Draw'                             handicap=0       sbv=''           price=19
+   'Vienna D.C. Timberwolves'         handicap=0       sbv=''           price=1.11
+   (+6 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73829008219  Winner (Incl. Overtime) | Winner (Incl. OT)  handicap=0  parent=False suspended=False active=True
+   'Vienna United PSV'                handicap=0       sbv=''           price=5.4
+   'Vienna D.C. Timberwolves'         handicap=0       sbv=''           price=1.09
+
+MARKET id=7382900860  [1st Half] - [Win/Draw/Win] | 1st Half - 1X2  handicap=0  parent=False suspended=False active=True
+   'Vienna United PSV'                handicap=0       sbv=''           price=4.2
+   'Draw'                             handicap=0       sbv=''           price=21
+   'Vienna D.C. Timberwolves'         handicap=0       sbv=''           price=1.22
+
+MARKET id=7382900818  Total | Total  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=125.5   sbv=' (125.5)'   price=1.77
+   'Under '                           handicap=125.5   sbv=' (125.5)'   price=1.91
+   'Over '                            handicap=130.5   sbv=' (130.5)'   price=2.07
+   'Under '                           handicap=130.5   sbv=' (130.5)'   price=1.65
+
+MARKET id=7382900818total=125.5~  Total | Total (125.5)  handicap=125.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73829008223  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=0  parent=True suspended=False active=True
+   'Vienna United PSV'                handicap=9.5     sbv=' (+9.5)'    price=1.9
+   'Vienna D.C. Timberwolves'         handicap=9.5     sbv=' (-9.5)'    price=1.77
+   'Vienna United PSV'                handicap=10.5    sbv=' (+10.5)'   price=1.81
+   'Vienna D.C. Timberwolves'         handicap=10.5    sbv=' (-10.5)'   price=1.86
+   'Vienna United PSV'                handicap=11.5    sbv=' (+11.5)'   price=1.83
+   'Vienna D.C. Timberwolves'         handicap=11.5    sbv=' (-11.5)'   price=1.84
+
+MARKET id=73829008223hcp=11.5~  Handicap (Incl. Overtime) | Handicap (Incl. Overtime)  handicap=11.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73829008225  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=125.5   sbv=' (125.5)'   price=1.68
+   'Under '                           handicap=125.5   sbv=' (125.5)'   price=1.91
+   'Over '                            handicap=126.5   sbv=' (126.5)'   price=1.76
+   'Under '                           handicap=126.5   sbv=' (126.5)'   price=1.81
+   'Over '                            handicap=127.5   sbv=' (127.5)'   price=1.85
+   'Under '                           handicap=127.5   sbv=' (127.5)'   price=1.72
+   'Over '                            handicap=128.5   sbv=' (128.5)'   price=1.76
+   'Under '                           handicap=128.5   sbv=' (128.5)'   price=1.82
+   'Over '                            handicap=129.5   sbv=' (129.5)'   price=1.85
+   'Under '                           handicap=129.5   sbv=' (129.5)'   price=1.73
+   'Over '                            handicap=130.5   sbv=' (130.5)'   price=1.71
+   'Under '                           handicap=130.5   sbv=' (130.5)'   price=1.87
+   'Over '                            handicap=131.5   sbv=' (131.5)'   price=1.79
+   'Under '                           handicap=131.5   sbv=' (131.5)'   price=1.78
+   'Over '                            handicap=132.5   sbv=' (132.5)'   price=1.88
+   'Under '                           handicap=132.5   sbv=' (132.5)'   price=1.7
+
+MARKET id=73829008225total=125.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=125.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73829008225total=126.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=126.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73829008225total=127.5~  Total (Incl. Overtime) | Total (Incl. Overtime)  handicap=127.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=73829008235quarternr=1~  1st Quarter - 1X2 | 1st Quarter - 1X2  handicap=0  parent=False suspended=False active=True
+   'Vienna United PSV'                handicap=0       sbv=''           price=3.25
+   'Draw'                             handicap=0       sbv=''           price=14
+   'Vienna D.C. Timberwolves'         handicap=0       sbv=''           price=1.37
+
+MARKET id=73829008236quarternr=1~total=31.5~  1st Quarter - Total | 1st Quarter - Total (31.5)  handicap=31.5  parent=False suspended=False active=True
+   'Over '                            handicap=31.5    sbv=' (31.5)'    price=1.89
+   'Under '                           handicap=31.5    sbv=' (31.5)'    price=1.78
+
+MARKET id=73829008303quarternr=1~hcp=3.5~  1st Quarter - Handicap | 1st Quarter Handicap (3.5)  handicap=3.5  parent=False suspended=False active=True
+   'Vienna United PSV'                handicap=3.5     sbv=' (+3.5)'    price=1.79
+   'Vienna D.C. Timberwolves'         handicap=3.5     sbv=' (-3.5)'    price=1.89
+
+MARKET id=7382900866  1st Half - Handicap | 1st Half - Handicap  handicap=0  parent=True suspended=False active=True
+   'Vienna United PSV'                handicap=5.5     sbv=' (+5.5)'    price=1.83
+   'Vienna D.C. Timberwolves'         handicap=5.5     sbv=' (-5.5)'    price=1.84
+   'Vienna United PSV'                handicap=6.5     sbv=' (+6.5)'    price=1.82
+   'Vienna D.C. Timberwolves'         handicap=6.5     sbv=' (-6.5)'    price=1.85
+
+MARKET id=7382900866hcp=6.5~  1st Half - Handicap | 1st Half - Handicap (6.5)  handicap=6.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)
+
+MARKET id=7382900868  1st Half - Total | 1st Half - Total  handicap=0  parent=True suspended=False active=True
+   'Over '                            handicap=62.5    sbv=' (62.5)'    price=1.82
+   'Under '                           handicap=62.5    sbv=' (62.5)'    price=1.85
+   'Over '                            handicap=63.5    sbv=' (63.5)'    price=1.82
+   'Under '                           handicap=63.5    sbv=' (63.5)'    price=1.85
+   'Over '                            handicap=64.5    sbv=' (64.5)'    price=1.87
+   'Under '                           handicap=64.5    sbv=' (64.5)'    price=1.8
+   'Over '                            handicap=65.5    sbv=' (65.5)'    price=1.81
+   'Under '                           handicap=65.5    sbv=' (65.5)'    price=1.86
+
+MARKET id=7382900868total=62.5~  1st Half - Total | 1st Half - Total (62.5)  handicap=62.5  parent=False suspended=False active=True
+   (+2 more selections whose id starts with this market's id but belong to other markets)

@@ -4,6 +4,7 @@ Shared settings written by the dashboard controller and read by the bot.
 bot_controls.json (next to the scripts) holds:
     "markets": {category: true/false}   which bet categories the bot may place
     "run":     true/false               false = the bot shuts itself down (like Ctrl+C)
+    "stakes":  {category: naira}        stake per bet for each category (default 100)
     "token":   random string            the dashboard must send it to change anything
 
 Default (no file): every category ON, run = True.
@@ -79,6 +80,10 @@ CATEGORIES = [
 ]
 KEYS = [c["key"] for c in CATEGORIES]
 
+DEFAULT_STAKE = 100.0
+MIN_STAKE = 10.0
+MAX_STAKE = 5000.0  # safety cap: the bot never stakes more than this on one bet
+
 _lock = threading.Lock()
 _cache = {"at": 0.0, "state": None}
 
@@ -100,7 +105,12 @@ def category_of(sport, line_type, outcome):
 
 
 def _defaults():
-    return {"run": True, "markets": {k: True for k in KEYS}, "token": ""}
+    return {
+        "run": True,
+        "markets": {k: True for k in KEYS},
+        "stakes": {k: DEFAULT_STAKE for k in KEYS},
+        "token": "",
+    }
 
 
 def _read_file():
@@ -112,6 +122,11 @@ def _read_file():
         state["token"] = str(data.get("token", ""))
         for k in KEYS:
             state["markets"][k] = bool((data.get("markets") or {}).get(k, True))
+            try:
+                v = float((data.get("stakes") or {}).get(k, DEFAULT_STAKE))
+                state["stakes"][k] = v if MIN_STAKE <= v <= MAX_STAKE else DEFAULT_STAKE
+            except (TypeError, ValueError):
+                state["stakes"][k] = DEFAULT_STAKE
     except (OSError, ValueError):
         pass
     return state
@@ -151,6 +166,28 @@ def set_market(key, on):
     state["markets"][key] = bool(on)
     _write(state)
     return state
+
+
+def set_stake(key, amount):
+    """Stake per bet for one category. Raises KeyError (unknown category) or ValueError."""
+    if key not in KEYS:
+        raise KeyError(key)
+    v = round(float(amount), 2)
+    if not (MIN_STAKE <= v <= MAX_STAKE):
+        raise ValueError(f"stake must be between {MIN_STAKE:g} and {MAX_STAKE:g}")
+    with _lock:
+        _cache["at"] = 0.0
+    state = _read_file()
+    state["stakes"][key] = v
+    _write(state)
+    return state
+
+
+def stake_for(category):
+    """Stake in naira for a bet category (the default for anything unknown)."""
+    if category is None:
+        return DEFAULT_STAKE
+    return load_state()["stakes"].get(category, DEFAULT_STAKE)
 
 
 def set_run(on):

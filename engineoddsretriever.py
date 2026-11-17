@@ -1,3 +1,4 @@
+import re
 import time
 import threading
 import concurrent.futures
@@ -151,6 +152,29 @@ def _normalize_name(name: str) -> str:
 
 def _team_similarity(a: str, b: str) -> float:
     return SequenceMatcher(None, _normalize_name(a), _normalize_name(b)).ratio()
+
+
+_EVENT_CACHE = {}
+_EVENT_CACHE_LOCK = threading.Lock()
+EVENT_CACHE_TTL_SEC = (
+    5.0  # many alternate lines of one match share a single Betway download
+)
+
+
+def _event_markets_cached(event_id, pool_key, pool_size):
+    now = time.time()
+    with _EVENT_CACHE_LOCK:
+        hit = _EVENT_CACHE.get(event_id)
+        if hit and now - hit[0] < EVENT_CACHE_TTL_SEC:
+            return hit[1]
+    data = _fetch_event_markets_all_pages(event_id, pool_key, pool_size)
+    if data is not None:
+        with _EVENT_CACHE_LOCK:
+            _EVENT_CACHE[event_id] = (now, data)
+            if len(_EVENT_CACHE) > 60:
+                for k in sorted(_EVENT_CACHE, key=lambda k: _EVENT_CACHE[k][0])[:30]:
+                    _EVENT_CACHE.pop(k, None)
+    return data
 
 
 def _fetch_event_markets_all_pages(event_id, pool_key, pool_size):
@@ -735,11 +759,26 @@ def _market_in_family(m, keyword, period=0):
     return not any(w in name or w in display for w in EXCLUDED_MARKET_WORDS)
 
 
-def _build_candidates(data, keyword, period, line_type):
+def _base_id(mid):
+    """Id of the market family: '73719360223hcp=-1.5~' -> '73719360223'."""
+    return re.split(r"hcp=|total=", str(mid))[0]
+
+
+def _is_child(mid):
+    return "hcp=" in str(mid) or "total=" in str(mid)
+
+
+def _build_candidates(data, keyword, period, line_type, market_names=None):
     """
-    (market, line) pairs. For handicaps the line is read from the market's OWN selections
-    first: Betway keeps the main line (e.g. +0.5) on the parent market itself, whose own
-    "handicap" field says 0. Child markets that repeat a line win over the parent.
+    (market, line) pairs for the wanted bet type.
+
+    market_names: if given, ONLY markets whose Betway name is exactly one of these
+    (lower case) are used - this keeps e.g. "Total (Excl. Overtime)", "Total & Both
+    Teams To Score" or "Total (Over-Exact-Under)" out of the way.
+
+    Lines are read from the market's OWN selections first: Betway keeps some lines
+    only on the parent market, whose own "handicap" field says 0. A child market that
+    repeats a line wins over the parent.
     """
     outcomes = data.get("outcomes", []) or []
     has_ref = any("marketId" in o for o in outcomes)
@@ -749,49 +788,64 @@ def _build_candidates(data, keyword, period, line_type):
             if o.get("shouldDisplay", True):
                 by_market.setdefault(str(o.get("marketId", "")), []).append(o)
 
+    def own_lines(mid):
+        groups = {}
+        for o in by_market.get(mid, []):
+            nm = (o.get("name") or "").strip().lower()
+            if line_type == "spread" and nm in ("yes", "no"):
+                continue
+            try:
+                hv = round(float(o.get("handicap")), 3)
+            except (TypeError, ValueError):
+                continue
+            groups.setdefault(hv, []).append(o)
+        good = []
+        for hv, outs in groups.items():
+            names = [(o.get("name") or "").strip().lower() for o in outs]
+            if line_type == "spread":
+                draws = sum(1 for n in names if n in ("draw", "x"))
+                teams = len({n for n in names if n not in ("draw", "x")})
+                if teams == 2 and draws <= 1 and len(outs) == 2 + draws:
+                    good.append(hv)
+            else:
+                if (
+                    len(outs) == 2
+                    and sum(n.startswith("over") for n in names) == 1
+                    and sum(n.startswith("under") for n in names) == 1
+                ):
+                    good.append(hv)
+        return good
+
     raw = []
     for m in data.get("marketsInGroup", []):
         if m.get("isSuspended"):
             continue
         if m.get("isActive") is False or m.get("shouldDisplay") is False:
             continue
-        if not _market_in_family(m, keyword, period):
+        if market_names is not None:
+            if (m.get("name") or "").strip().lower() not in market_names:
+                continue
+        elif not _market_in_family(m, keyword, period):
             continue
         mid = str(m.get("marketId"))
-        added = False
-        if line_type == "spread" and has_ref:
-            groups = {}
-            for o in by_market.get(mid, []):
-                nm = (o.get("name") or "").strip().lower()
-                if nm in ("yes", "no"):
-                    continue
-                try:
-                    hv = round(float(o.get("handicap")), 3)
-                except (TypeError, ValueError):
-                    continue
-                groups.setdefault(hv, []).append(o)
-            for hv, outs in groups.items():
-                names = [(o.get("name") or "").strip().lower() for o in outs]
-                draws = sum(1 for n in names if n in ("draw", "x"))
-                teams = len({n for n in names if n not in ("draw", "x")})
-                if teams == 2 and draws <= 1 and len(outs) == 2 + draws:
-                    raw.append((m, hv))
-                    added = True
-        if not added and not m.get("isSquashedParent"):
+        lines = own_lines(mid) if has_ref else []
+        for hv in lines:
+            raw.append((m, hv))
+        if not lines and not m.get("isSquashedParent"):
             try:
                 raw.append((m, float(m.get("handicap"))))
             except (TypeError, ValueError):
                 pass
 
     child_keys = {
-        (str(m.get("marketId")).split("hcp=")[0], round(h, 3))
+        (_base_id(m.get("marketId")), round(h, 3))
         for m, h in raw
-        if "hcp=" in str(m.get("marketId"))
+        if _is_child(m.get("marketId"))
     }
     out, seen = [], set()
     for m, h in raw:
         mid = str(m.get("marketId"))
-        if "hcp=" not in mid and (mid.split("hcp=")[0], round(h, 3)) in child_keys:
+        if not _is_child(mid) and (_base_id(mid), round(h, 3)) in child_keys:
             continue  # a child market already carries this line
         if (mid, round(h, 3)) in seen:
             continue
@@ -842,7 +896,7 @@ def _outcomes_for_market(market, h, all_outcomes, has_market_ref):
     ):  # 2-way handicap/total, or a 3-way handicap (two teams + Draw)
         return outs
 
-    base = market_id.split("hcp=")[0]
+    base = _base_id(market_id)
     family, seen = [], set()
     for o in all_outcomes:
         oid = str(o.get("outcomeId", ""))
@@ -863,6 +917,49 @@ def _outcomes_for_market(market, h, all_outcomes, has_market_ref):
             seen.add(oid)
             family.append(o)
     return family
+
+
+def _market_variants(data, outcome, default_market):
+    """
+    Every sensible (marketId, displayMarketId, marketVersion) a bet on this selection might need,
+    best guess first. Betway files some lines' selections under the PARENT market while their
+    ids start with the CHILD market's id; which of the two a bet needs is learned by the bot.
+    """
+    markets = {str(m.get("marketId")): m for m in data.get("marketsInGroup", [])}
+    oid = str(outcome.get("outcomeId") or "")
+    prefix = next(
+        (mid for mid in sorted(markets, key=len, reverse=True) if oid.startswith(mid)),
+        None,
+    )
+    owner = (
+        str(outcome.get("marketId")) if outcome.get("marketId") is not None else None
+    )
+    base = (
+        prefix
+        or (str(default_market.get("marketId")) if default_market else None)
+        or owner
+    )
+
+    out = []
+
+    def add(m, d):
+        if m is None or d is None:
+            return
+        mk = markets.get(m) or (
+            default_market
+            if default_market and str(default_market.get("marketId")) == m
+            else {}
+        )
+        v = {"marketId": m, "displayMarketId": d, "marketVersion": mk.get("version")}
+        if v not in out:
+            out.append(v)
+
+    add(base, base)
+    if owner and owner != base:
+        add(owner, owner)
+        add(base, owner)
+        add(owner, base)
+    return out
 
 
 def _push_probability(outs, prices_by_outcome):
@@ -972,6 +1069,7 @@ def resolve_live_bet_target(
     allow_three_way=False,
     line_window=None,
     period=0,
+    market_names=None,
 ):
     """
     Finds the Betway market + selection for a spread or total bet, using the
@@ -987,6 +1085,7 @@ def resolve_live_bet_target(
     line_window: (down, up_if_positive, up_if_negative) - how far from Pinnacle's line the
     Betway line may be, measured in the BET SIDE's own numbers. "Up" = easier (more points
     for the bettor), "down" = harder. Replaces max_line_gap when given.
+    market_names: exact Betway market names (lower case) to use, e.g. {"total (incl. overtime)"}.
     period: 0 = full game, 1 / 2 = first / second half (football handicaps).
     allow_three_way: also use Betway's 3-way handicap markets ("0:1", "1:0", ... with a Draw
     selection). Whole-number handicaps only exist there. The bet is on the team selection;
@@ -1006,7 +1105,7 @@ def resolve_live_bet_target(
 
     Returns (live_dict, "") on success, or (None, reason) when it can't.
     """
-    data = _fetch_event_markets_all_pages(event_id, "resolve", 8)
+    data = _event_markets_cached(event_id, "resolve", 8)
     if data is None:
         return None, "Betway market lookup failed (network)"
 
@@ -1021,7 +1120,7 @@ def resolve_live_bet_target(
 
     keyword = "handicap" if line_type == "spread" else "total"
 
-    candidates = _build_candidates(data, keyword, period, line_type)
+    candidates = _build_candidates(data, keyword, period, line_type, market_names)
 
     if not candidates:
         where = {1: "1st-half ", 2: "2nd-half "}.get(period, "")
@@ -1163,9 +1262,13 @@ def resolve_live_bet_target(
         if price_val in (None, 0):
             continue
 
+        variants = _market_variants(data, matched, market)
+        first = variants[0]
         live = {
             "eventId": event_id,
-            "marketId": market_id,
+            "marketId": first["marketId"],
+            "displayMarketId": first["displayMarketId"],
+            "idVariants": variants,
             "outcomeId": matched.get("outcomeId"),
             "outcomeName": matched.get("name"),
             "marketName": market.get("displayName"),
@@ -1179,8 +1282,14 @@ def resolve_live_bet_target(
             "pushProb": push_prob,
             "eventVersion": event_version
             if event_version is not None
+            else (
+                first["marketVersion"]
+                if first["marketVersion"] is not None
+                else market.get("version")
+            ),
+            "marketVersion": first["marketVersion"]
+            if first["marketVersion"] is not None
             else market.get("version"),
-            "marketVersion": market.get("version"),
             "outcomeVersion": matched.get("version"),
             "priceVersion": price.get("version"),
             "serverEmopSource": price.get("emopSource"),
@@ -1193,6 +1302,118 @@ def resolve_live_bet_target(
         None,
         f"Betway's {keyword} markets near {target_line:g} have no usable 2-way selection or price ({detail})",
     )
+
+
+def resolve_live_moneyline(event_id, side, home_name, away_name, market_names):
+    """
+    Live price for a PERIOD moneyline (half / quarter): looks the market up by its exact Betway
+    name (e.g. "[1st half] - [win/draw/win]", "1st quarter - draw no bet") and picks the home,
+    away or draw selection. Returns (live_dict, "") or (None, reason).
+    """
+    data = _event_markets_cached(event_id, "resolve", 8)
+    if data is None:
+        return None, "Betway market lookup failed (network)"
+    outcomes = data.get("outcomes", [])
+    has_ref = any("marketId" in o for o in outcomes)
+    prices_by_outcome = {p["outcomeId"]: p for p in data.get("prices", [])}
+    ev_version = next(
+        (
+            e.get("version")
+            for e in data.get("events", [])
+            if str(e.get("eventId")) == str(event_id)
+        ),
+        None,
+    )
+
+    markets = [
+        m
+        for m in data.get("marketsInGroup", [])
+        if (m.get("name") or "").strip().lower() in market_names
+        and not m.get("isSuspended")
+        and m.get("isActive") is not False
+        and m.get("shouldDisplay") is not False
+    ]
+    if not markets:
+        return None, "Betway has no open market named " + " / ".join(
+            sorted(market_names)
+        )
+
+    for market in markets:
+        mid = str(market.get("marketId"))
+        outs = [
+            o
+            for o in outcomes
+            if o.get("shouldDisplay", True)
+            and (
+                str(o.get("marketId", "")) == mid
+                if has_ref
+                else str(o.get("outcomeId", "")).startswith(mid)
+            )
+        ]
+        if len(outs) < 2:
+            continue
+        if side == "draw":
+            matched = next(
+                (
+                    o
+                    for o in outs
+                    if (o.get("name") or "").strip().lower() in ("draw", "x")
+                ),
+                None,
+            )
+        else:
+            teams = [
+                o
+                for o in outs
+                if (o.get("name") or "").strip().lower() not in ("draw", "x")
+            ]
+            team, other = (
+                (home_name, away_name) if side == "home" else (away_name, home_name)
+            )
+            matched = _pick_spread_selection(teams, side, team, other, None, None)
+        if matched is None:
+            continue
+        price = prices_by_outcome.get(matched.get("outcomeId"))
+        price_val = price.get("priceDecimal") if price else None
+        if price_val in (None, 0):
+            continue
+        variants = _market_variants(data, matched, market)
+        first = variants[0]
+        return (
+            {
+                "eventId": event_id,
+                "marketId": first["marketId"],
+                "displayMarketId": first["displayMarketId"],
+                "idVariants": variants,
+                "outcomeId": matched.get("outcomeId"),
+                "outcomeName": matched.get("name"),
+                "marketName": market.get("displayName"),
+                "priceNum": price.get("numerator"),
+                "priceDen": price.get("denominator"),
+                "priceDec": price_val,
+                "handicap": 0,
+                "rawHandicap": 0.0,
+                "betSideLine": None,
+                "threeWay": False,
+                "pushProb": 0.0,
+                "eventVersion": ev_version
+                if ev_version is not None
+                else (
+                    first["marketVersion"]
+                    if first["marketVersion"] is not None
+                    else market.get("version")
+                ),
+                "marketVersion": first["marketVersion"]
+                if first["marketVersion"] is not None
+                else market.get("version"),
+                "outcomeVersion": matched.get("version"),
+                "priceVersion": price.get("version"),
+                "serverEmopSource": price.get("emopSource"),
+                "publicHubPublishedTime": price.get("publicHubPublishedTime"),
+            },
+            "",
+        )
+    return None, "no usable selection or price in the period moneyline market"
 
 
 def main():

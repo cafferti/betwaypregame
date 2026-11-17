@@ -81,7 +81,8 @@ def place_bet(auth_token, event, stake_naira):
                         "isEachWayActive": False,
                         "eventId": event["eventId"],
                         "marketId": event["marketId"],
-                        "displayMarketId": event["marketId"],
+                        "displayMarketId": event.get("displayMarketId")
+                        or event["marketId"],
                         "outcomeId": [event["outcomeId"]],
                         "eventVersion": event["eventVersion"],
                         "marketVersion": event["marketVersion"],

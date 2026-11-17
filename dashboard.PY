@@ -282,6 +282,12 @@ header h1{font-size:15px;margin:0;font-weight:700}
 .mchip.on{background:#161c2b}
 .mchip:not(.on){opacity:.6}
 .mchip.dis,.mchip.dis input{cursor:not-allowed}.mchip.dis{opacity:.4}
+.stkh{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+.schip{display:inline-flex;align-items:center;gap:6px;padding:2px 4px 2px 9px;border:1px solid var(--line);border-radius:14px;background:var(--bg);border-left:3px solid var(--c)}
+.schip input{width:68px;background:transparent;border:0;border-left:1px solid var(--line);color:inherit;font:inherit;padding:2px 6px;text-align:right;outline:none;-moz-appearance:textfield}
+.schip input::-webkit-outer-spin-button,.schip input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.schip input:focus{background:#161c2b}.schip input:disabled{opacity:.5;cursor:not-allowed}
+.schip.ok{box-shadow:0 0 0 1px #00e676}
 .sbody{display:grid;grid-template-columns:minmax(250px,26%) minmax(0,1fr)}
 .bars{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:330px}
 .pills{flex:none;display:flex;flex-wrap:wrap;gap:5px;padding:6px 10px}
@@ -331,6 +337,7 @@ select.sel{background:var(--bg);color:var(--txt);border:1px solid var(--line);bo
     <button id="botbtn" class="botbtn" disabled>Start / Stop</button>
   </div>
   <div class="row2" id="ctl"></div>
+  <div class="row2" id="stk"></div>
 </header>
 <div class="content">
   <div class="main">
@@ -514,6 +521,8 @@ function xfmt(v,span){
 const CATS=DATA.cats;
 const ALLC='#4fc3f7';
 let controls=Object.assign({},DATA.controls.markets);
+let stakes=Object.assign({},DATA.controls.stakes),ssig=JSON.stringify(stakes);
+const SLIM=DATA.controls.stakeLimits;
 let botRunning=null, stopping=false, apiOk=false, sig='';
 const API=(location.protocol==='file:')?('http://127.0.0.1:'+DATA.api.port):'';
 const TOKEN=window.__TOKEN__||DATA.api.token;
@@ -534,6 +543,26 @@ function renderControls(){
   document.querySelectorAll('#ctl .mchip').forEach(l=>{
     const inp=l.querySelector('input');inp.onchange=()=>toggleMarket(l.dataset.k,inp.checked);});
 }
+function renderStakes(){
+  const groups=[['basketball','Basketball'],['football','Football']];
+  const fmt=v=>String(Math.round(v*100)/100);
+  $('stk').innerHTML='<span class="stkh" title="Naira staked on every bet of that type. Press Enter or click away to save; it applies to the next bet.">Stake per bet (₦)</span>'+
+    groups.map(([sp,name])=>`<div class="grp"><b>${name}</b>`+CATS.filter(c=>c.sport===sp).map(c=>
+      `<label class="schip" style="--c:${c.color}"><span>${esc(c.label.split(' ').slice(1).join(' '))}</span><input type="number" min="${SLIM.min}" max="${SLIM.max}" step="any" value="${fmt(stakes[c.key])}" data-k="${c.key}"${apiOk?'':' disabled'}></label>`).join('')+'</div>').join('');
+  document.querySelectorAll('#stk input').forEach(i=>{
+    i.onchange=()=>setStake(i);
+    i.onkeydown=e=>{if(e.key==='Enter')i.blur();};});
+}
+async function setStake(inp){
+  const k=inp.dataset.k,v=parseFloat(inp.value);
+  if(!apiOk){toast('Controls are offline — start the bot with: python main.py');inp.value=stakes[k];return;}
+  if(!(v>=SLIM.min&&v<=SLIM.max)){toast('Stake must be between ₦'+SLIM.min+' and ₦'+SLIM.max);inp.value=stakes[k];return;}
+  try{
+    const st=await api('/api/stake',{key:k,amount:v});
+    stakes=Object.assign({},st.stakes);ssig=JSON.stringify(stakes);inp.value=Math.round(stakes[k]*100)/100;
+    const l=inp.closest('.schip');l.classList.add('ok');setTimeout(()=>l.classList.remove('ok'),1200);
+  }catch(e){inp.value=stakes[k];toast('Could not save the stake — reload the page');}
+}
 async function toggleMarket(k,on){
   if(!apiOk){toast('Controls are offline — start the bot with: python main.py');return;}
   const prev=controls[k];controls[k]=on;sig=JSON.stringify(controls);renderControls();renderAll();
@@ -553,6 +582,9 @@ function applyState(st){
   const was=apiOk;apiOk=true;botRunning=st.running;stopping=st.running&&!st.run_requested;
   const nsig=JSON.stringify(st.markets);
   if(nsig!==sig||!was){sig=nsig;controls=Object.assign({},st.markets);renderControls();renderAll();}
+  const ns=JSON.stringify(st.stakes);
+  const typing=document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#stk');
+  if((ns!==ssig||!was)&&!typing){ssig=ns;stakes=Object.assign({},st.stakes);renderStakes();}
   updateBotUi();
 }
 async function pollState(){
@@ -857,7 +889,7 @@ $('filter').value=load('filter','');
 $('filter').oninput=()=>{store('filter',$('filter').value);renderList(true);};
 $('sort').onchange=()=>{store('sort',$('sort').value);renderList(true);};
 
-buildRoiSel();renderControls();updateBotUi();
+buildRoiSel();renderControls();renderStakes();updateBotUi();
 renderAll();markDrop();renderList();renderOdds();updateStatus();
 pollState();pollData();
 setInterval(pollState,2000);setInterval(pollData,3000);setInterval(updateStatus,5000);
@@ -888,7 +920,11 @@ def write_dashboard():
             "pnl": _pnl_payload(),
             "odds": _odds_payload(),
             "cats": controls.CATEGORIES,
-            "controls": {"markets": ctl["markets"]},
+            "controls": {
+                "markets": ctl["markets"],
+                "stakes": ctl["stakes"],
+                "stakeLimits": {"min": controls.MIN_STAKE, "max": controls.MAX_STAKE},
+            },
             "api": {"port": PORT, "token": ctl["token"]},
         }
         blob = json.dumps(data).replace("</", "<\\/")

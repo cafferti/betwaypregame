@@ -3,12 +3,22 @@
   "markets": {
     "bb_moneyline": true,
     "bb_spread": true,
-    "bb_over": true,
-    "bb_under": true,
-    "fb_moneyline": true,
+    "bb_over": false,
+    "bb_under": false,
+    "fb_moneyline": false,
     "fb_spread": true,
-    "fb_over": true,
-    "fb_under": true
+    "fb_over": false,
+    "fb_under": false
   },
-  "token": "5226aec6f282313c108fbc3e28543310"
+  "stakes": {
+    "bb_moneyline": 100.0,
+    "bb_spread": 100.0,
+    "bb_over": 100.0,
+    "bb_under": 100.0,
+    "fb_moneyline": 100.0,
+    "fb_spread": 100.0,
+    "fb_over": 100.0,
+    "fb_under": 100.0
+  },
+  "token": "eac5bcd56b6d77474bf6db1fd2ea1dec"
 }

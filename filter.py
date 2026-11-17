@@ -1,5 +1,5 @@
 from difflib import SequenceMatcher
-from engineoddsretriever import resolve_live_bet_target, MAX_LINE_GAP
+from engineoddsretriever import resolve_live_bet_target, resolve_live_moneyline, MAX_LINE_GAP
 import controls
 
 SPORT_ID_SOCCER = "1"
@@ -22,6 +22,10 @@ REVERSE_MONEYLINE_SPORTS = {"football"}
 # at or above it the bet is skipped. A sport that isn't listed has no cap.
 REVERSE_MAX_ODDS = {"football": 2.7}
 
+# Reverse only when the OTHER side is the favourite on BETWAY (its Betway price is lower than
+# the signalled side's Betway price); otherwise the ORIGINAL side is bet.
+REVERSE_ONLY_WHEN_FAVOURITE = True
+
 # EXPERIMENT: basketball totals may use a Betway line up to this far from
 # Pinnacle's line (all other categories keep the engine's MAX_LINE_GAP).
 BASKETBALL_TOTAL_MAX_LINE_GAP = 7.0
@@ -35,44 +39,105 @@ FOOTBALL_TOTAL_MAX_LINE_GAP = 1.0  # same idea for football overs / unders
 # points. (down, up when Pinnacle's line is positive, up when it is negative); "up" = easier.
 BASKETBALL_SPREAD_WINDOW = (3.0, 6.0, 3.0)
 
+# Football spread rules, judged on the line actually bet and on Betway's 1X2 prices:
+#  * a NEGATIVE line (the team starts a goal or more behind) only on the favourite;
+#  * a POSITIVE line on the favourite: no restriction;
+#  * a POSITIVE line on the underdog: when the two teams' win odds are MORE than
+#    FOOTBALL_UNDERDOG_ODDS_GAP apart (a lopsided match) it must be +1 or more; in a close
+#    match (gap within that) any positive line, e.g. +0.5, is accepted.
+FOOTBALL_SPREAD_RULES_ENABLED = True
+FOOTBALL_UNDERDOG_ODDS_GAP = 0.5
+FOOTBALL_UNDERDOG_MIN_LINE_IF_LOPSIDED = 1.0
+
 # Pinnacle also posts corners / bookings markets. They are not goals markets, so they must
 # never be matched to a Betway goals market (that is how wrong bets were placed).
 BLOCK_ALT_STAT_MARKETS = True
 
-# Only full-game alerts are bet (period 0). Football: 1 = first half, 2 = second half.
-# Basketball: 1-4 = quarters. Betway's period markets are not mapped yet, so those are skipped.
+# Only full-game alerts are bet (period 0) unless the Betway market names are known.
+# Football: 1 = first half, 2 = second half.
+# Basketball: 1 = first half, 2 = second half, 3/4/5/6 = quarters 1/2/3/4.
 ALLOWED_PERIODS = {0}
-# ...except where the Betway market names are known: football spreads (handicaps) also
-# cover the 1st half (period 1) and 2nd half (period 2).
-ALLOWED_PERIODS_BY_MARKET = {("football", "spread"): {0, 1, 2}}
+ALLOWED_PERIODS_BY_MARKET = {
+    ("football", "spread"): {0, 1, 2},
+    ("football", "money_line"): {0, 1, 2},
+    ("basketball", "money_line"): {0, 1, 2, 3, 4, 5, 6},
+    ("basketball", "spread"): {0, 1, 2, 3, 4, 5, 6},
+    ("basketball", "total"): {0, 1, 2, 3, 4, 5, 6},
+}
 
-# Safety net for football spreads / totals: an EV above this is almost certainly a wrong
+_ORD = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th"}
+
+
+def betway_market_names(sport, line_type, period):
+    """
+    The exact Betway market names (lower case) that match a Pinnacle spread/total for
+    this period, from the market dumps. None = use the generic search (football spreads).
+    """
+    if line_type not in ("spread", "total"):
+        return None
+    if sport == "basketball":
+        if period == 0:
+            return {"handicap (incl. overtime)"} if line_type == "spread" else {"total (incl. overtime)"}
+        # alert period numbers: 1 / 2 = halves, 3 / 4 / 5 / 6 = quarters 1 / 2 / 3 / 4
+        part = {
+            1: "1st half",
+            2: "2nd half",
+            3: "1st quarter",
+            4: "2nd quarter",
+            5: "3rd quarter",
+            6: "4th quarter",
+        }.get(period)
+        if part:
+            return {f"{part} - handicap"} if line_type == "spread" else {f"{part} - total"}
+    if sport == "football" and line_type == "total" and period == 0:
+        return {"total", "[total goals]"}
+    return None
+
+
+def betway_moneyline_names(sport, period):
+    """
+    Betway market names for a PERIOD moneyline (full game uses the cached listing).
+    Football halves: the 3-way 1X2 of that half. Basketball halves/quarters: Draw No Bet,
+    the 2-way market that, like Pinnacle's, refunds a tie.
+    """
+    if sport == "football":
+        return {1: {"[1st half] - [win/draw/win]"}, 2: {"[2nd half] - [win/draw/win]"}}.get(period)
+    if sport == "basketball":
+        part = {1: "1st half", 2: "2nd half", 3: "1st quarter", 4: "2nd quarter", 5: "3rd quarter", 6: "4th quarter"}.get(period)
+        return {f"{part} - draw no bet"} if part else None
+    return None
+
+
+_PERIOD_LABEL = {
+    "football": {1: " [1st half]", 2: " [2nd half]"},
+    "basketball": {
+        1: " [1st half]",
+        2: " [2nd half]",
+        3: " [Q1]",
+        4: " [Q2]",
+        5: " [Q3]",
+        6: " [Q4]",
+    },
+}
+
+# Safety net for football and basketball spreads / totals: an EV above this is almost certainly a wrong
 # line or the wrong selection (it happened: 131%), so the bet is skipped. None = off.
-MAX_FOOTBALL_LINE_EV_PERCENT = 60.0
+MAX_LINE_EV_PERCENT = 60.0
 
 # Per-category (sport, line_type, side) -> (min_ev_percent, max_nvp).
 # side is "over"/"under" for totals, "+"/"-" for spreads, None for moneyline.
 # A missing or None entry means that category is EXCLUDED — no bets placed.
 CATEGORY_THRESHOLDS = {
     ("basketball", "total", "over"): (4.0, 2.5),
-    ("basketball", "total", "under"): (
-        4.0,
-        2.5,
-    ),  # unders now enabled (same criteria as overs)
+    ("basketball", "total", "under"): (4.0, 2.5),  # unders now enabled (same criteria as overs)
     ("basketball", "spread", "+"): (5.0, 2.5),
     ("basketball", "spread", "-"): (6.0, 2.5),
     ("basketball", "money_line", None): (7.0, 2.5),
     ("football", "money_line", None): (6.0, 2.7),
     ("football", "total", "over"): (4.0, 2.5),
-    ("football", "total", "under"): (
-        4.0,
-        2.5,
-    ),  # unders now enabled (same criteria as overs)
+    ("football", "total", "under"): (4.0, 2.5),  # unders now enabled (same criteria as overs)
     ("football", "spread", "+"): (5.0, 2.5),
-    ("football", "spread", "-"): (
-        5.0,
-        2.5,
-    ),  # now enabled (same criteria as "+" spreads)
+    ("football", "spread", "-"): (5.0, 2.5),  # now enabled (same criteria as "+" spreads)
 }
 
 
@@ -331,6 +396,43 @@ def find_betway_price_moneyline(betway_row: dict, pinnacle_event: dict, sport: s
     return None, None
 
 
+def _live_placement_fields(live: dict) -> dict:
+    return {
+        "betway_market_id": live.get("marketId"),
+        "betway_display_market_id": live.get("displayMarketId"),
+        "id_variants": live.get("idVariants"),
+        "outcomeId": live.get("outcomeId"),
+        "eventVersion": live.get("eventVersion"),
+        "marketVersion": live.get("marketVersion"),
+        "outcomeVersion": live.get("outcomeVersion"),
+        "priceVersion": live.get("priceVersion"),
+        "serverEmopSource": live.get("serverEmopSource"),
+        "publicHubPublishedTime": live.get("publicHubPublishedTime"),
+        "priceNum": live.get("priceNum"),
+        "priceDen": live.get("priceDen"),
+        "betway_handicap_scaled": live.get("handicap"),
+    }
+
+
+def _moneyline_lookup(betway_row: dict, pinnacle_event: dict, sport: str, period: int):
+    """(price, placement fields) for a moneyline side: cached listing for the full game,
+    live Betway lookup of the half / quarter market otherwise."""
+    if period == 0:
+        price, o = find_betway_price_moneyline(betway_row, pinnacle_event, sport)
+        return (None, None) if price is None else (price, _moneyline_placement_fields(o))
+    names = betway_moneyline_names(sport, period)
+    if not names:
+        return None, None
+    live, _why = resolve_live_moneyline(
+        betway_row.get("eventId"),
+        (pinnacle_event.get("outcome") or "").strip().lower(),
+        pinnacle_event.get("home"),
+        pinnacle_event.get("away"),
+        names,
+    )
+    return (None, None) if live is None else (live["priceDec"], _live_placement_fields(live))
+
+
 def _moneyline_placement_fields(matched_outcome: dict) -> dict:
     return {
         "betway_market_id": matched_outcome.get("marketId"),
@@ -347,12 +449,74 @@ def _moneyline_placement_fields(matched_outcome: dict) -> dict:
     }
 
 
+def period_allowed(sport, line_type, period) -> bool:
+    return period in ALLOWED_PERIODS_BY_MARKET.get((sport, line_type), ALLOWED_PERIODS)
+
+
+def _own_line(pinnacle_event: dict, outcome_label: str) -> float:
+    """
+    Pinnacle's `points` for a spread is the HOME team's handicap, for both sides (an alert for
+    the away side at points=3 is the away team at -3). Returns the handicap of the team
+    actually being bet.
+    """
+    try:
+        p = float(pinnacle_event.get("points") or 0)
+    except (TypeError, ValueError):
+        p = 0.0
+    return -p if outcome_label == "away" else p
+
+
+def _reverse_is_favourite(betway_row, pinnacle_event, sport, period, outcome_label, original_price) -> bool:
+    """True when the opposite side has the LOWER Betway price than the signalled side."""
+    flipped = "away" if outcome_label == "home" else "home"
+    rev_price, _fields = _moneyline_lookup(
+        betway_row, dict(pinnacle_event, outcome=flipped), sport, period
+    )
+    if rev_price is None or original_price is None:
+        return False  # cannot tell: keep the original side
+    return rev_price < original_price
+
+
+def _football_spread_blocked(betway_row, pinnacle_event, outcome_label, line):
+    """None when the bet is allowed, else the reason it is skipped."""
+    if line is None:
+        return None
+    other_label = "away" if outcome_label == "home" else "home"
+    own_price, _ = find_betway_price_moneyline(
+        betway_row, dict(pinnacle_event, outcome=outcome_label), "football"
+    )
+    other_price, _ = find_betway_price_moneyline(
+        betway_row, dict(pinnacle_event, outcome=other_label), "football"
+    )
+    if own_price is None or other_price is None:
+        return "football spread rule: no Betway 1X2 price to tell the favourite — skipped"
+    favourite = own_price < other_price
+    gap = abs(own_price - other_price)
+    seen = f"(Betway win odds {own_price} vs {other_price})"
+    if line < 0:
+        if not favourite:
+            return f"football spread {line:+g} on the underdog {seen} — negative lines only on the favourite"
+        return None
+    if favourite:
+        return None
+    if gap > FOOTBALL_UNDERDOG_ODDS_GAP and line < FOOTBALL_UNDERDOG_MIN_LINE_IF_LOPSIDED:
+        return (
+            f"football spread {line:+g} on the underdog {seen} — odds gap {gap:.2f} is over "
+            f"{FOOTBALL_UNDERDOG_ODDS_GAP:g}, so it needs +{FOOTBALL_UNDERDOG_MIN_LINE_IF_LOPSIDED:g} or more"
+        )
+    return None
+
+
 def _describe(pinnacle_event: dict) -> str:
-    return (
+    text = (
         f"{pinnacle_event.get('home')} vs {pinnacle_event.get('away')} "
         f"[{pinnacle_event.get('leagueName')}] {pinnacle_event.get('lineType')} "
         f"{pinnacle_event.get('outcome')} {pinnacle_event.get('points')}"
     )
+    if pinnacle_event.get("lineType") == "spread":
+        side = (pinnacle_event.get("outcome") or "").lower()
+        text += f" (bet team's own line {_own_line(pinnacle_event, side):+g})"
+    return text
 
 
 def _fmt(val, suffix=""):
@@ -360,6 +524,8 @@ def _fmt(val, suffix=""):
 
 
 def _log(passed: bool, reason: str, pinnacle_event: dict, ev_percent, nvp):
+    if not passed and pinnacle_event.get("altLine"):
+        return  # alternate lines: the console only shows the ones that pass
     icon = "✅ PASS" if passed else "❌ FAIL"
     print(
         f"{icon} [{reason}] {_describe(pinnacle_event)} "
@@ -384,13 +550,7 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
 
     if BLOCK_ALT_STAT_MARKETS and is_alt_stat_market(pinnacle_event):
         stats.record_fail("corners/bookings market")
-        _log(
-            False,
-            "corners/bookings market — not a goals market, skipped",
-            pinnacle_event,
-            None,
-            None,
-        )
+        _log(False, "corners/bookings market — not a goals market, skipped", pinnacle_event, None, None)
         return None
 
     try:
@@ -402,13 +562,7 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
     )
     if period not in allowed:
         stats.record_fail("not a full-game period")
-        _log(
-            False,
-            f"period {period} market (not full game) — skipped",
-            pinnacle_event,
-            None,
-            None,
-        )
+        _log(False, f"period {period} market (not full game) — skipped", pinnacle_event, None, None)
         return None
 
     outcome_label = (pinnacle_event.get("outcome") or "").lower()
@@ -421,7 +575,12 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
     line_type = pinnacle_event.get("lineType")
 
     thresholds = _get_category_thresholds(
-        sport, line_type, outcome_label, pinnacle_event.get("points")
+        sport,
+        line_type,
+        outcome_label,
+        _own_line(pinnacle_event, outcome_label)
+        if line_type == "spread"
+        else pinnacle_event.get("points"),
     )
     if thresholds is None:
         stats.record_fail("category excluded or unsupported")
@@ -439,13 +598,7 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
     category = controls.category_of(sport, line_type, outcome_label)
     if not controls.is_enabled(category):
         stats.record_fail("category switched off")
-        _log(
-            False,
-            f"{category} is switched OFF in the dashboard",
-            pinnacle_event,
-            None,
-            nvp,
-        )
+        _log(False, f"{category} is switched OFF in the dashboard", pinnacle_event, None, nvp)
         return None
 
     if nvp > max_nvp:
@@ -463,8 +616,8 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
     three_way, push_prob = False, 0.0
 
     if line_type == "money_line":
-        betway_price, matched_outcome = find_betway_price_moneyline(
-            betway_row, pinnacle_event, sport
+        betway_price, placement_fields = _moneyline_lookup(
+            betway_row, pinnacle_event, sport, period
         )
         if betway_price is None:
             stats.record_fail("market/outcome not found on Betway")
@@ -473,13 +626,14 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
 
         matched_line = None
         is_exact = True
-        placement_fields = _moneyline_placement_fields(matched_outcome)
 
     elif line_type in ("spread", "total"):
         try:
             target_line = float(pinnacle_event.get("points") or 0)
         except (ValueError, TypeError):
             target_line = 0.0
+        if line_type == "spread" and outcome_label == "away":
+            target_line = -target_line  # points = home handicap; the away team's own line is the opposite
 
         team_name = (
             pinnacle_event["home"]
@@ -491,11 +645,10 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
         # keeps the engine default.
         nearest = False
         window = None
+        line_gap = MAX_LINE_GAP  # default; the branches below widen it where needed
         if sport == "basketball" and line_type == "spread":
             window = BASKETBALL_SPREAD_WINDOW
-            nearest = (
-                True  # closest line inside the window (ties go to the easier line)
-            )
+            nearest = True  # closest line inside the window (ties go to the easier line)
         elif sport == "basketball" and line_type == "total":
             line_gap = BASKETBALL_TOTAL_MAX_LINE_GAP
         elif sport == "football" and line_type == "spread":
@@ -508,9 +661,7 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
             line_gap = MAX_LINE_GAP
 
         other_team_name = (
-            pinnacle_event["away"]
-            if outcome_label == "home"
-            else pinnacle_event["home"]
+            pinnacle_event["away"] if outcome_label == "home" else pinnacle_event["home"]
         )
 
         # The engine returns (live, reason); accept a single value too.
@@ -527,6 +678,7 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
             allow_three_way=(sport == "football" and line_type == "spread"),
             line_window=window,
             period=period,
+            market_names=betway_market_names(sport, line_type, period),
         )
         if isinstance(result_live, tuple):
             live, reason = result_live
@@ -551,19 +703,16 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
         # the line for the team/side being bet — comparable with Pinnacle's point
         matched_line = live.get("betSideLine", live.get("rawHandicap"))
         is_exact = matched_line is not None and abs(matched_line - target_line) <= 0.01
-        placement_fields = {
-            "betway_market_id": live.get("marketId"),
-            "outcomeId": live.get("outcomeId"),
-            "eventVersion": live.get("eventVersion"),
-            "marketVersion": live.get("marketVersion"),
-            "outcomeVersion": live.get("outcomeVersion"),
-            "priceVersion": live.get("priceVersion"),
-            "serverEmopSource": live.get("serverEmopSource"),
-            "publicHubPublishedTime": live.get("publicHubPublishedTime"),
-            "priceNum": live.get("priceNum"),
-            "priceDen": live.get("priceDen"),
-            "betway_handicap_scaled": live.get("handicap"),
-        }
+        placement_fields = _live_placement_fields(live)
+
+        if sport == "football" and line_type == "spread" and FOOTBALL_SPREAD_RULES_ENABLED:
+            blocked = _football_spread_blocked(
+                betway_row, pinnacle_event, outcome_label, matched_line
+            )
+            if blocked:
+                stats.record_fail("football spread rule")
+                _log(False, blocked, pinnacle_event, None, nvp)
+                return None
 
     else:
         stats.record_fail("unsupported line type")
@@ -573,15 +722,15 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
     ev_percent = (betway_price * fair_prob * ev_factor - 1.0) * 100.0
 
     if (
-        MAX_FOOTBALL_LINE_EV_PERCENT is not None
-        and sport == "football"
+        MAX_LINE_EV_PERCENT is not None
+        and sport in ("football", "basketball")
         and line_type in ("spread", "total")
-        and ev_percent > MAX_FOOTBALL_LINE_EV_PERCENT
+        and ev_percent > MAX_LINE_EV_PERCENT
     ):
         stats.record_fail("EV implausibly high (line mismatch?)")
         _log(
             False,
-            f"EV {ev_percent:.1f}% is above {MAX_FOOTBALL_LINE_EV_PERCENT:g}% — "
+            f"EV {ev_percent:.1f}% is above {MAX_LINE_EV_PERCENT:g}% — "
             f"probably a wrong line/selection, skipped",
             pinnacle_event,
             ev_percent,
@@ -611,16 +760,28 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
     bet_outcome_label = outcome_label
     is_reversed = False
 
+    reverse_declined = False
     if (
         sport in REVERSE_MONEYLINE_SPORTS
         and line_type == "money_line"
         and outcome_label in ("home", "away")
     ):
+        if REVERSE_ONLY_WHEN_FAVOURITE and not _reverse_is_favourite(
+            betway_row, pinnacle_event, sport, period, outcome_label, betway_price
+        ):
+            reverse_declined = True  # the other side is not the favourite: bet the original side
+
+    if (
+        sport in REVERSE_MONEYLINE_SPORTS
+        and line_type == "money_line"
+        and outcome_label in ("home", "away")
+        and not reverse_declined
+    ):
         flipped_label = "away" if outcome_label == "home" else "home"
         flipped_event = dict(pinnacle_event, outcome=flipped_label)
 
-        rev_price, rev_outcome = find_betway_price_moneyline(
-            betway_row, flipped_event, sport
+        rev_price, rev_fields = _moneyline_lookup(
+            betway_row, flipped_event, sport, period
         )
         if rev_price is None:
             stats.record_fail("reverse outcome not found on Betway")
@@ -648,7 +809,7 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
         rev_nvp, _rev_fair = compute_nvp_and_fair_prob(pinnacle_event, flipped_label)
 
         betway_price = rev_price
-        placement_fields = _moneyline_placement_fields(rev_outcome)
+        placement_fields = rev_fields
         bet_outcome_label = flipped_label
         is_reversed = True
         if rev_nvp is not None:
@@ -662,11 +823,16 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
         "home": pinnacle_event.get("home"),
         "away": pinnacle_event.get("away"),
         "league": (pinnacle_event.get("leagueName") or "")
-        + {1: " [1st half]", 2: " [2nd half]"}.get(period, ""),
+        + _PERIOD_LABEL.get(sport, {}).get(period, "")
+        + (" [alt]" if pinnacle_event.get("altLine") else ""),
         "sport": sport,
         "line_type": line_type,
         "outcome": bet_outcome_label,
-        "points": pinnacle_event.get("points"),
+        "points": (
+            _own_line(pinnacle_event, outcome_label)
+            if line_type == "spread"
+            else pinnacle_event.get("points")
+        ),
         "pinnacle_price": get_pinnacle_price(pinnacle_event, bet_outcome_label),
         "minutes_to_kickoff": round(minutes_to_kickoff(pinnacle_event) or 0, 1),
         "nvp": round(nvp, 3),
@@ -685,7 +851,11 @@ def evaluate_pinnacle_event(pinnacle_event: dict, betway_rows: list):
         line_note = (
             f" | REVERSED {outcome_label}->{bet_outcome_label} @ {betway_price}"
             if is_reversed
-            else ""
+            else (
+                f" | ORIGINAL side kept @ {betway_price} (the other side is not the favourite on Betway)"
+                if reverse_declined
+                else ""
+            )
         )
     else:
         line_note = f" | Betway line {matched_line} @ {betway_price}" + (

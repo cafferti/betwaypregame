@@ -103,6 +103,7 @@ def state_payload():
         "pid": _child.pid if child_alive() else None,
         "run_requested": st["run"],
         "markets": st["markets"],
+        "stakes": st["stakes"],
         "server_time": int(time.time() * 1000),
     }
 
@@ -209,6 +210,12 @@ class Handler(BaseHTTPRequestHandler):
             path = self.path.split("?")[0]
             if path == "/api/toggle":
                 controls.set_market(str(body.get("key")), bool(body.get("on")))
+                return self._json(200, state_payload())
+            if path == "/api/stake":
+                try:
+                    controls.set_stake(str(body.get("key")), body.get("amount"))
+                except (TypeError, ValueError) as e:
+                    return self._json(400, {"error": str(e)})
                 return self._json(200, state_payload())
             if path == "/api/bot":
                 action = body.get("action")

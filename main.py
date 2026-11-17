@@ -9,15 +9,18 @@ import time
 
 from engineoddsretriever import OddsCache, BasketballOddsCache
 from pinnacleretriever import OddsStreamer
-from filter import evaluate_pinnacle_event, stats
+from filter import evaluate_pinnacle_event, stats, period_allowed
 from betplacer import BetPlacer, TokenRejected
 from betlog import BET_LOG_CSV, ensure_csv_schema, append_bet, settle_pending
 from liveprice import refresh_live_price
 import netstatus
 import controls
+import altlines
 
-STAKE_NAIRA = 200
-MAX_STAKE_NAIRA = 500
+STAKE_NAIRA = 100
+MAX_STAKE_NAIRA = (
+    controls.MAX_STAKE
+)  # safety cap; the stake itself is set per category on the dashboard
 DAILY_CAP_NAIRA = float(
     "inf"
 )  # no daily cap (the per-bet MAX_STAKE_NAIRA still applies)
@@ -169,7 +172,13 @@ def _print_bet_outcome(result: dict, bet_result: dict) -> bool:
             meta = inner.get("errorMetaData") or {}
             msg = meta.get("message") or inner.get("placementStatus")
             icon = "⏸️ " if inner.get("errorCode") == 100010 else "❌"
-            print(f"{icon} REJECTED — {desc} | {inner.get('errorCode')}: {msg}")
+            detail = ""
+            if inner.get("errorCode") != PRICE_CHANGED_CODE:
+                try:
+                    detail = " | full reply: " + json.dumps(inner)[:400]
+                except (TypeError, ValueError):
+                    detail = ""
+            print(f"{icon} REJECTED — {desc} | {inner.get('errorCode')}: {msg}{detail}")
             return False
     else:
         note = str(bet_result.get("note") or response)
@@ -181,6 +190,8 @@ def _build_bet_event(result: dict):
     return {
         "eventId": result["betway_event_id"],
         "marketId": result["betway_market_id"],
+        "displayMarketId": result.get("betway_display_market_id")
+        or result["betway_market_id"],
         "outcomeId": result["outcomeId"],
         "priceNum": result["priceNum"],
         "priceDen": result["priceDen"],
@@ -222,6 +233,62 @@ def _rebet_price_ok(original: float, new: float):
     return True, ""
 
 
+_LEARNED_VARIANT = {}  # (sport, line type) -> which market-id variant Betway accepted
+
+
+def _error_code(bet_result: dict):
+    brs = (bet_result.get("response") or {}).get("betResponses") or []
+    return brs[0].get("errorCode") if brs else None
+
+
+def _was_placed(bet_result: dict) -> bool:
+    brs = (bet_result.get("response") or {}).get("betResponses") or []
+    return bool(
+        bet_result.get("status_code") == 200
+        and brs
+        and brs[0].get("isSuccessful")
+        and brs[0].get("placementStatus") == "Success"
+        and brs[0].get("errorCode") == 0
+    )
+
+
+def _place_with_variants(placer, result: dict, bet_event: dict, stake):
+    """
+    Betway answers a malformed bet with "10: Error". Where a selection could be sent under
+    more than one market id, try the others (a rejected request costs nothing) and remember
+    which one works for that kind of bet.
+    """
+    variants = result.get("id_variants") or []
+    if len(variants) <= 1:
+        return placer.try_place(bet_event, stake), bet_event
+    key = (result.get("sport"), result.get("line_type"))
+    order = list(range(len(variants)))
+    learned = _LEARNED_VARIANT.get(key)
+    if learned is not None and learned < len(variants):
+        order.remove(learned)
+        order.insert(0, learned)
+    bet_result, ev = None, bet_event
+    for idx in order:
+        v = variants[idx]
+        ev = dict(
+            bet_event, marketId=v["marketId"], displayMarketId=v["displayMarketId"]
+        )
+        if v.get("marketVersion") is not None:
+            ev["marketVersion"] = v["marketVersion"]
+        bet_result = placer.try_place(ev, stake)
+        if _was_placed(bet_result):
+            if _LEARNED_VARIANT.get(key) != idx:
+                _LEARNED_VARIANT[key] = idx
+                print(
+                    f"🧩 Betway accepted market-id variant #{idx + 1} for {key[0]} {key[1]} — remembered"
+                )
+            result["betway_market_id"] = ev["marketId"]
+            return bet_result, ev
+        if _error_code(bet_result) != 10:
+            return bet_result, ev  # only "Error 10" means "try the next market id"
+    return bet_result, ev
+
+
 def place_with_rebet(placer: BetPlacer, result: dict, bet_event: dict, stake):
     """
     Runs on the single bet thread. Sends the bet; if Betway rejects it with
@@ -232,7 +299,7 @@ def place_with_rebet(placer: BetPlacer, result: dict, bet_event: dict, stake):
     A rebet only goes out if the live price passes the odds tiers in REBET_TIERS. On success, `result` is updated with the price
     actually taken, so the CSV logs the real odds.
     """
-    bet_result = placer.try_place(bet_event, stake)
+    bet_result, bet_event = _place_with_variants(placer, result, bet_event, stake)
     if not REBET_ENABLED:
         return bet_result
 
@@ -360,12 +427,71 @@ async def settlement_loop(placer: BetPlacer):
 # ============================================================
 
 
+async def process_result(result, placer, already_bet, loop):
+    """From a passed evaluation to the bet (used for real alerts AND alternate lines)."""
+    _play_sound("passed")
+
+    required = [
+        "betway_event_id",
+        "betway_market_id",
+        "outcomeId",
+        "priceNum",
+        "priceDen",
+        "marketVersion",
+        "outcomeVersion",
+        "priceVersion",
+    ]
+    if any(result.get(k) is None for k in required):
+        print(f"⏭️  BET SKIPPED [missing_required_fields] — {_describe_result(result)}")
+        return
+
+    outcome_key = f"{result['line_type']}:{result['outcomeId']}"
+    if outcome_key in already_bet:
+        print(f"⏭️  BET SKIPPED [already_bet_this_outcome] — {_describe_result(result)}")
+        return
+
+    bet_event = _build_bet_event(result)
+    category = controls.category_of(
+        result.get("sport"), result.get("line_type"), result.get("outcome")
+    )
+    stake = controls.stake_for(category)  # set per bet type on the dashboard
+
+    try:
+        bet_result = await loop.run_in_executor(
+            bet_executor, place_with_rebet, placer, result, bet_event, stake
+        )
+        was_placed = _print_bet_outcome(result, bet_result)
+        if was_placed:
+            already_bet.add(outcome_key)
+            await loop.run_in_executor(
+                bet_executor,
+                save_bet_record,
+                outcome_key,
+                _describe_result(result),
+                bet_result,
+            )
+            await loop.run_in_executor(
+                bet_executor,
+                append_bet,
+                result,
+                bet_result,
+            )
+    except Exception as e:
+        if netstatus.is_network_error(e):
+            netstatus.waiting(
+                "betway"
+            )  # silent: the pulsing WAITING line is the only output
+        else:
+            print(f"[orchestrator] ERROR: bet placement failed — {e}")
+
+
 async def consume_and_evaluate(
     streamer: OddsStreamer,
     football_cache: OddsCache,
     basketball_cache: BasketballOddsCache,
     placer: BetPlacer,
     already_bet: set,
+    alt_queue=None,
 ):
     loop = asyncio.get_running_loop()
 
@@ -375,6 +501,10 @@ async def consume_and_evaluate(
             netstatus.wait_online_async()
         )  # internet out: hold this alert until it is back (nothing is skipped)
         betway_rows = football_cache.get_rows() + basketball_cache.get_rows()
+
+        # every alert, passed or not, also triggers the alternate-lines worker
+        if alt_queue is not None:
+            alt_queue.put_nowait(event)
 
         try:
             # evaluate_pinnacle_event may block on a live network call
@@ -391,60 +521,53 @@ async def consume_and_evaluate(
 
         if result is None:
             continue
-        _play_sound("passed")
 
-        required = [
-            "betway_event_id",
-            "betway_market_id",
-            "outcomeId",
-            "priceNum",
-            "priceDen",
-            "marketVersion",
-            "outcomeVersion",
-            "priceVersion",
-        ]
-        if any(result.get(k) is None for k in required):
-            print(
-                f"⏭️  BET SKIPPED [missing_required_fields] — {_describe_result(result)}"
-            )
-            continue
+        await process_result(result, placer, already_bet, loop)
 
-        outcome_key = f"{result['line_type']}:{result['outcomeId']}"
-        if outcome_key in already_bet:
-            print(
-                f"⏭️  BET SKIPPED [already_bet_this_outcome] — {_describe_result(result)}"
-            )
-            continue
 
-        bet_event = _build_bet_event(result)
-
+async def alt_consumer(
+    alt_queue,
+    football_cache: OddsCache,
+    basketball_cache: BasketballOddsCache,
+    placer: BetPlacer,
+    already_bet: set,
+):
+    """
+    For each alert: load the whole match from the events API and run every DROPPING
+    alternate line through exactly the same checks and bet placement as a real alert.
+    """
+    loop = asyncio.get_running_loop()
+    while True:
+        event = await alt_queue.get()
         try:
-            bet_result = await loop.run_in_executor(
-                bet_executor, place_with_rebet, placer, result, bet_event, STAKE_NAIRA
+            await netstatus.wait_online_async()
+            alts = await loop.run_in_executor(
+                None, altlines.build_alt_alerts, event, period_allowed
             )
-            was_placed = _print_bet_outcome(result, bet_result)
-            if was_placed:
-                already_bet.add(outcome_key)
-                await loop.run_in_executor(
-                    bet_executor,
-                    save_bet_record,
-                    outcome_key,
-                    _describe_result(result),
-                    bet_result,
-                )
-                await loop.run_in_executor(
-                    bet_executor,
-                    append_bet,
-                    result,
-                    bet_result,
-                )
+            if not alts:
+                continue
+            checked = passed = 0
+            for alt_event in alts:
+                await netstatus.wait_online_async()
+                rows = football_cache.get_rows() + basketball_cache.get_rows()
+                try:
+                    res = await loop.run_in_executor(
+                        None, evaluate_pinnacle_event, alt_event, rows
+                    )
+                except Exception as e:
+                    print(f"[alt] ERROR: evaluating an alternate line failed — {e}")
+                    continue
+                checked += 1
+                if res is None:
+                    continue
+                passed += 1
+                await process_result(res, placer, already_bet, loop)
+            print(
+                f"[alt] {event.get('home')} vs {event.get('away')}: "
+                f"{checked} dropping alternate line(s) checked, {passed} passed"
+            )
         except Exception as e:
-            if netstatus.is_network_error(e):
-                netstatus.waiting(
-                    "betway"
-                )  # silent: the pulsing WAITING line is the only output
-            else:
-                print(f"[orchestrator] ERROR: bet placement failed — {e}")
+            print(f"[alt] ERROR: {type(e).__name__}: {e}")
 
 
 # ============================================================
@@ -543,6 +666,7 @@ async def main():
 
         print("[orchestrator] Starting Pinnacle stream...")
         out_queue = asyncio.Queue()
+        alt_queue = asyncio.Queue()
         streamer = OddsStreamer(out_queue)
 
         def quiet_asyncio_background_errors(loop, context):
@@ -556,7 +680,15 @@ async def main():
         await asyncio.gather(
             streamer.run(),
             consume_and_evaluate(
-                streamer, football_cache, basketball_cache, placer, already_bet
+                streamer,
+                football_cache,
+                basketball_cache,
+                placer,
+                already_bet,
+                alt_queue,
+            ),
+            alt_consumer(
+                alt_queue, football_cache, basketball_cache, placer, already_bet
             ),
             settlement_loop(placer),
             control_watcher(),

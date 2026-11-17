@@ -48,11 +48,12 @@ def refresh_live_price(event_id, market_id, outcome_id):
         )
         if outcome is not None:
             market = next(
+                (m for m in markets if str(m.get("marketId")) == market_id_s), None
+            ) or next(
                 (
                     m
                     for m in markets
-                    if str(m.get("marketId")) == market_id_s
-                    or str(m.get("marketId")) == str(outcome.get("marketId"))
+                    if str(m.get("marketId")) == str(outcome.get("marketId"))
                 ),
                 None,
             )
